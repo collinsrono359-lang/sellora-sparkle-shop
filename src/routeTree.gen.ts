@@ -34,8 +34,10 @@ import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
+import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
+import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPaystackVerifyRouteImport } from './routes/api/paystack.verify'
 import { Route as ApiPaystackInitiateRouteImport } from './routes/api/paystack.initiate'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
@@ -165,6 +167,11 @@ const InboxUserIdRoute = InboxUserIdRouteImport.update({
   path: '/inbox/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiReviewAppealRoute = ApiReviewAppealRouteImport.update({
+  id: '/api/review-appeal',
+  path: '/api/review-appeal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiModerateRoute = ApiModerateRouteImport.update({
   id: '/api/moderate',
   path: '/api/moderate',
@@ -173,6 +180,11 @@ const ApiModerateRoute = ApiModerateRouteImport.update({
 const ProductIdEditRoute = ProductIdEditRouteImport.update({
   id: '/product/$id_/edit',
   path: '/product/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
+  id: '/api/public/bootstrap-admin',
+  path: '/api/public/bootstrap-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPaystackVerifyRoute = ApiPaystackVerifyRouteImport.update({
@@ -214,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/review-appeal': typeof ApiReviewAppealRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -221,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/shop/$id': typeof ShopIdRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -246,6 +260,7 @@ export interface FileRoutesByTo {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/review-appeal': typeof ApiReviewAppealRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -253,6 +268,7 @@ export interface FileRoutesByTo {
   '/shop/$id': typeof ShopIdRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -279,6 +295,7 @@ export interface FileRoutesById {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/review-appeal': typeof ApiReviewAppealRoute
   '/inbox_/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -286,6 +303,7 @@ export interface FileRoutesById {
   '/shop/$id': typeof ShopIdRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
+  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id_/edit': typeof ProductIdEditRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -313,6 +331,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/api/moderate'
+    | '/api/review-appeal'
     | '/inbox/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -320,6 +339,7 @@ export interface FileRouteTypes {
     | '/shop/$id'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
+    | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
     | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -345,6 +365,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/api/moderate'
+    | '/api/review-appeal'
     | '/inbox/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -352,6 +373,7 @@ export interface FileRouteTypes {
     | '/shop/$id'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
+    | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
     | '/api/public/paystack/webhook'
   id:
@@ -377,6 +399,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/api/moderate'
+    | '/api/review-appeal'
     | '/inbox_/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -384,6 +407,7 @@ export interface FileRouteTypes {
     | '/shop/$id'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
+    | '/api/public/bootstrap-admin'
     | '/product/$id_/edit'
     | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
@@ -410,6 +434,7 @@ export interface RootRouteChildren {
   SellRoute: typeof SellRoute
   SettingsRoute: typeof SettingsRoute
   ApiModerateRoute: typeof ApiModerateRoute
+  ApiReviewAppealRoute: typeof ApiReviewAppealRoute
   InboxUserIdRoute: typeof InboxUserIdRoute
   LegalDocRoute: typeof LegalDocRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
@@ -417,6 +442,7 @@ export interface RootRouteChildren {
   ShopIdRoute: typeof ShopIdRoute
   ApiPaystackInitiateRoute: typeof ApiPaystackInitiateRoute
   ApiPaystackVerifyRoute: typeof ApiPaystackVerifyRoute
+  ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ProductIdEditRoute: typeof ProductIdEditRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
@@ -598,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InboxUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/review-appeal': {
+      id: '/api/review-appeal'
+      path: '/api/review-appeal'
+      fullPath: '/api/review-appeal'
+      preLoaderRoute: typeof ApiReviewAppealRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/moderate': {
       id: '/api/moderate'
       path: '/api/moderate'
@@ -610,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/product/$id/edit'
       fullPath: '/product/$id/edit'
       preLoaderRoute: typeof ProductIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/bootstrap-admin': {
+      id: '/api/public/bootstrap-admin'
+      path: '/api/public/bootstrap-admin'
+      fullPath: '/api/public/bootstrap-admin'
+      preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/paystack/verify': {
@@ -658,6 +698,7 @@ const rootRouteChildren: RootRouteChildren = {
   SellRoute: SellRoute,
   SettingsRoute: SettingsRoute,
   ApiModerateRoute: ApiModerateRoute,
+  ApiReviewAppealRoute: ApiReviewAppealRoute,
   InboxUserIdRoute: InboxUserIdRoute,
   LegalDocRoute: LegalDocRoute,
   PaymentReturnRoute: PaymentReturnRoute,
@@ -665,18 +706,10 @@ const rootRouteChildren: RootRouteChildren = {
   ShopIdRoute: ShopIdRoute,
   ApiPaystackInitiateRoute: ApiPaystackInitiateRoute,
   ApiPaystackVerifyRoute: ApiPaystackVerifyRoute,
+  ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ProductIdEditRoute: ProductIdEditRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
