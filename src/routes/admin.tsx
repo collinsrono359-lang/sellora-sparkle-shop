@@ -88,7 +88,8 @@ function Admin() {
     // Acknowledge any open flags so banners disappear
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.from("moderation_flags" as any) as any).update({ acknowledged: true }).eq("user_id", userId).eq("acknowledged", false);
-    await supabase.from("notifications").insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from("notifications") as any).insert({
       user_id: userId,
       category: "system",
       title: "Account restored",
@@ -118,7 +119,8 @@ function Admin() {
     const title = prompt("Notification title:");
     if (!title) return;
     const body = prompt("Notification body (optional):") ?? "";
-    const { error } = await supabase.from("notifications").insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.from("notifications") as any).insert({
       user_id: toUserId,
       category: "system",
       title: title.trim(),
