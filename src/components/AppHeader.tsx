@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Store } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import sellorLogo from "@/assets/sellora-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ export function AppHeader() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
   const [unread, setUnread] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -30,13 +32,15 @@ export function AppHeader() {
       });
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("read", false)
       .then(({ count }) => setUnread(count ?? 0));
+    supabase.from("user_roles").select("role").eq("user_id", user.id)
+      .then(({ data }) => setIsAdmin((data ?? []).some((r) => r.role === "admin" || r.role === "moderator")));
   }, [user]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto flex max-w-screen-md items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
-          <Store className="h-6 w-6 text-primary" aria-hidden />
+          <img src={sellorLogo} alt="" width={28} height={28} className="h-7 w-7" />
           <span className="text-xl font-bold text-primary">Sellora</span>
         </Link>
         <div className="flex items-center gap-2">
@@ -68,7 +72,11 @@ export function AppHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>{name || user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate({ to: "/dashboard" })}>Dashboard</DropdownMenuItem>
+                {isAdmin ? (
+                  <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>Admin Dashboard</DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => navigate({ to: "/dashboard" })}>Dashboard</DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => navigate({ to: "/onboarding" })}>Edit Profile</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/saved" })}>Saved</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>Settings</DropdownMenuItem>

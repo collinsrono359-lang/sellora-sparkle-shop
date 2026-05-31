@@ -58,7 +58,13 @@ function AuthPage() {
   };
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/onboarding" });
+    if (!loading && user) {
+      (async () => {
+        const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+        const isAdmin = (data ?? []).some((r) => r.role === "admin" || r.role === "moderator");
+        navigate({ to: isAdmin ? "/admin" : "/onboarding" });
+      })();
+    }
   }, [user, loading, navigate]);
 
   useEffect(() => {
