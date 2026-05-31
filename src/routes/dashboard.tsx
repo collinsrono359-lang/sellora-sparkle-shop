@@ -35,6 +35,13 @@ function Dashboard() {
     if (!loading && !user) navigate({ to: "/auth" });
     if (!user) return;
     (async () => {
+      // Redirect admins to the admin dashboard instead of the seller dashboard
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+      const isAdmin = (roles ?? []).some((r) => r.role === "admin" || r.role === "moderator");
+      if (isAdmin) {
+        navigate({ to: "/admin" });
+        return;
+      }
       const { data: prof } = await supabase
         .from("profiles")
         .select("display_name,avatar_url,location,verified,country")
