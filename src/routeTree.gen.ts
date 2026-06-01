@@ -34,6 +34,7 @@ import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
 import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
+import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
 import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
@@ -170,6 +171,11 @@ const InboxUserIdRoute = InboxUserIdRouteImport.update({
   path: '/inbox/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutProductIdRoute = CheckoutProductIdRouteImport.update({
+  id: '/checkout/$productId',
+  path: '/checkout/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiReviewAppealRoute = ApiReviewAppealRouteImport.update({
   id: '/api/review-appeal',
   path: '/api/review-appeal',
@@ -245,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -282,6 +289,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -320,6 +328,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox_/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
   '/payment/return': typeof PaymentReturnRoute
@@ -359,6 +368,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox_/$userId'
     | '/legal/$doc'
     | '/payment/return'
@@ -471,6 +483,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   ApiModerateRoute: typeof ApiModerateRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
+  CheckoutProductIdRoute: typeof CheckoutProductIdRoute
   InboxUserIdRoute: typeof InboxUserIdRoute
   LegalDocRoute: typeof LegalDocRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
@@ -663,6 +676,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InboxUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/$productId': {
+      id: '/checkout/$productId'
+      path: '/checkout/$productId'
+      fullPath: '/checkout/$productId'
+      preLoaderRoute: typeof CheckoutProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/review-appeal': {
       id: '/api/review-appeal'
       path: '/api/review-appeal'
@@ -759,6 +779,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   ApiModerateRoute: ApiModerateRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
+  CheckoutProductIdRoute: CheckoutProductIdRoute,
   InboxUserIdRoute: InboxUserIdRoute,
   LegalDocRoute: LegalDocRoute,
   PaymentReturnRoute: PaymentReturnRoute,
