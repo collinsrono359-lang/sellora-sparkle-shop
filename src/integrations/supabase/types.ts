@@ -407,6 +407,84 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          buyer_email: string | null
+          buyer_id: string
+          buyer_name: string | null
+          created_at: string
+          failed_at: string | null
+          fx_rate: number | null
+          id: string
+          notes: string | null
+          original_currency: string
+          original_price: number
+          paid_at: string | null
+          paypal_capture_id: string | null
+          paypal_order_id: string | null
+          platform_fee_usd: number
+          product_id: string
+          product_title: string
+          raw_paypal: Json | null
+          seller_id: string
+          seller_net_usd: number
+          shipping_address: Json | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          usd_amount: number
+        }
+        Insert: {
+          buyer_email?: string | null
+          buyer_id: string
+          buyer_name?: string | null
+          created_at?: string
+          failed_at?: string | null
+          fx_rate?: number | null
+          id?: string
+          notes?: string | null
+          original_currency?: string
+          original_price: number
+          paid_at?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
+          platform_fee_usd?: number
+          product_id: string
+          product_title: string
+          raw_paypal?: Json | null
+          seller_id: string
+          seller_net_usd?: number
+          shipping_address?: Json | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          usd_amount: number
+        }
+        Update: {
+          buyer_email?: string | null
+          buyer_id?: string
+          buyer_name?: string | null
+          created_at?: string
+          failed_at?: string | null
+          fx_rate?: number | null
+          id?: string
+          notes?: string | null
+          original_currency?: string
+          original_price?: number
+          paid_at?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
+          platform_fee_usd?: number
+          product_id?: string
+          product_title?: string
+          raw_paypal?: Json | null
+          seller_id?: string
+          seller_net_usd?: number
+          shipping_address?: Json | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          usd_amount?: number
+        }
+        Relationships: []
+      }
       payment_orders: {
         Row: {
           amount: number
@@ -463,6 +541,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      payment_poll_jobs: {
+        Row: {
+          attempts: number
+          created_at: string
+          done: boolean
+          id: string
+          last_error: string | null
+          next_run_at: string
+          order_id: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          done?: boolean
+          id?: string
+          last_error?: string | null
+          next_run_at?: string
+          order_id: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          done?: boolean
+          id?: string
+          last_error?: string | null
+          next_run_at?: string
+          order_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_poll_jobs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_views: {
         Row: {
@@ -718,6 +837,75 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_paypal_accounts: {
+        Row: {
+          connected_at: string
+          id: string
+          payer_email: string
+          payer_id: string | null
+          refresh_token_encrypted: string | null
+          scopes: string | null
+          seller_id: string
+          updated_at: string
+          verified_account: boolean
+        }
+        Insert: {
+          connected_at?: string
+          id?: string
+          payer_email: string
+          payer_id?: string | null
+          refresh_token_encrypted?: string | null
+          scopes?: string | null
+          seller_id: string
+          updated_at?: string
+          verified_account?: boolean
+        }
+        Update: {
+          connected_at?: string
+          id?: string
+          payer_email?: string
+          payer_id?: string | null
+          refresh_token_encrypted?: string | null
+          scopes?: string | null
+          seller_id?: string
+          updated_at?: string
+          verified_account?: boolean
+        }
+        Relationships: []
+      }
+      seller_wallets: {
+        Row: {
+          available_usd: number
+          created_at: string
+          id: string
+          lifetime_earned_usd: number
+          lifetime_withdrawn_usd: number
+          pending_usd: number
+          seller_id: string
+          updated_at: string
+        }
+        Insert: {
+          available_usd?: number
+          created_at?: string
+          id?: string
+          lifetime_earned_usd?: number
+          lifetime_withdrawn_usd?: number
+          pending_usd?: number
+          seller_id: string
+          updated_at?: string
+        }
+        Update: {
+          available_usd?: number
+          created_at?: string
+          id?: string
+          lifetime_earned_usd?: number
+          lifetime_withdrawn_usd?: number
+          pending_usd?: number
+          seller_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       signup_attempts: {
         Row: {
           created_at: string
@@ -892,6 +1080,98 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount_usd: number
+          balance_after_usd: number | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database["public"]["Enums"]["wallet_txn_kind"]
+          metadata: Json
+          order_id: string | null
+          seller_id: string
+          withdrawal_id: string | null
+        }
+        Insert: {
+          amount_usd: number
+          balance_after_usd?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["wallet_txn_kind"]
+          metadata?: Json
+          order_id?: string | null
+          seller_id: string
+          withdrawal_id?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          balance_after_usd?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["wallet_txn_kind"]
+          metadata?: Json
+          order_id?: string | null
+          seller_id?: string
+          withdrawal_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      withdrawals: {
+        Row: {
+          amount_usd: number
+          created_at: string
+          failure_reason: string | null
+          id: string
+          paid_at: string | null
+          paypal_batch_id: string | null
+          paypal_item_id: string | null
+          raw_paypal: Json | null
+          recipient_email: string
+          seller_id: string
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_usd: number
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          paypal_batch_id?: string | null
+          paypal_item_id?: string | null
+          raw_paypal?: Json | null
+          recipient_email: string
+          seller_id: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          paypal_batch_id?: string | null
+          paypal_item_id?: string | null
+          raw_paypal?: Json | null
+          recipient_email?: string
+          seller_id?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -913,6 +1193,7 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       kyc_status: "pending" | "approved" | "rejected"
       notification_category: "messages" | "product" | "account" | "promotions"
+      order_status: "pending" | "paid" | "failed" | "refunded" | "cancelled"
       payment_purpose:
         | "boost_product"
         | "verification"
@@ -937,6 +1218,13 @@ export type Database = {
         | "scam"
         | "inappropriate"
         | "other"
+      wallet_txn_kind: "sale" | "withdrawal" | "fee" | "refund" | "adjustment"
+      withdrawal_status:
+        | "pending"
+        | "processing"
+        | "paid"
+        | "failed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1067,6 +1355,7 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       kyc_status: ["pending", "approved", "rejected"],
       notification_category: ["messages", "product", "account", "promotions"],
+      order_status: ["pending", "paid", "failed", "refunded", "cancelled"],
       payment_purpose: [
         "boost_product",
         "verification",
@@ -1094,6 +1383,14 @@ export const Constants = {
         "scam",
         "inappropriate",
         "other",
+      ],
+      wallet_txn_kind: ["sale", "withdrawal", "fee", "refund", "adjustment"],
+      withdrawal_status: [
+        "pending",
+        "processing",
+        "paid",
+        "failed",
+        "cancelled",
       ],
     },
   },

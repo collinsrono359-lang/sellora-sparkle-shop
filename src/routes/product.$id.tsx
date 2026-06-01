@@ -31,6 +31,7 @@ interface Product {
   photos: string[];
   views: number;
   seller_id: string;
+  status: string;
 }
 
 function ProductPage() {
@@ -230,6 +231,16 @@ function ProductPage() {
           <Share2 className="h-5 w-5" />
         </button>
       </div>
+
+      {user && user.id !== p.seller_id && !isBlocked && p.status === "active" && (
+        <Link
+          to="/checkout/$productId"
+          params={{ productId: p.id }}
+          className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-success font-semibold text-success-foreground"
+        >
+          Buy Now · {p.currency} {p.price.toLocaleString()}
+        </Link>
+      )}
 
       <Link
         to="/shop/$id"

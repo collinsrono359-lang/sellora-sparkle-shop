@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SellRouteImport } from './routes/sell'
 import { Route as SearchRouteImport } from './routes/search'
@@ -18,6 +19,7 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as KycRouteImport } from './routes/kyc'
@@ -32,16 +34,26 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIdRouteImport } from './routes/shop.$id'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
+import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
 import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPaystackVerifyRouteImport } from './routes/api/paystack.verify'
 import { Route as ApiPaystackInitiateRouteImport } from './routes/api/paystack.initiate'
+import { Route as ApiPaypalCaptureRouteImport } from './routes/api/paypal/capture'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
+import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
+import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
 
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -85,6 +97,11 @@ const PreferencesRoute = PreferencesRouteImport.update({
 const PaymentsRoute = PaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -157,6 +174,11 @@ const PaymentReturnRoute = PaymentReturnRouteImport.update({
   path: '/payment/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
 const LegalDocRoute = LegalDocRouteImport.update({
   id: '/legal/$doc',
   path: '/legal/$doc',
@@ -165,6 +187,11 @@ const LegalDocRoute = LegalDocRouteImport.update({
 const InboxUserIdRoute = InboxUserIdRouteImport.update({
   id: '/inbox_/$userId',
   path: '/inbox/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutProductIdRoute = CheckoutProductIdRouteImport.update({
+  id: '/checkout/$productId',
+  path: '/checkout/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReviewAppealRoute = ApiReviewAppealRouteImport.update({
@@ -197,12 +224,27 @@ const ApiPaystackInitiateRoute = ApiPaystackInitiateRouteImport.update({
   path: '/api/paystack/initiate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPaypalCaptureRoute = ApiPaypalCaptureRouteImport.update({
+  id: '/api/paypal/capture',
+  path: '/api/paypal/capture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack/webhook',
     path: '/api/public/paystack/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaypalWebhookRoute = ApiPublicPaypalWebhookRouteImport.update({
+  id: '/api/public/paypal/webhook',
+  path: '/api/public/paypal/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPaypalPollRoute = ApiPublicPaypalPollRouteImport.update({
+  id: '/api/public/paypal/poll',
+  path: '/api/public/paypal/poll',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -216,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -225,17 +268,23 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -250,6 +299,7 @@ export interface FileRoutesByTo {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -259,17 +309,23 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
@@ -285,6 +341,7 @@ export interface FileRoutesById {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -294,17 +351,23 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
+  '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox_/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id_/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
@@ -321,6 +384,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -330,17 +394,23 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/poll'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -355,6 +425,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -364,17 +435,23 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/poll'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   id:
     | '__root__'
@@ -389,6 +466,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -398,17 +476,23 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
+    | '/checkout/$productId'
     | '/inbox_/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id_/edit'
+    | '/api/public/paypal/poll'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -424,6 +508,7 @@ export interface RootRouteChildren {
   KycRoute: typeof KycRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
   PaymentsRoute: typeof PaymentsRoute
   PreferencesRoute: typeof PreferencesRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -433,22 +518,34 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
   SettingsRoute: typeof SettingsRoute
+  WalletRoute: typeof WalletRoute
   ApiModerateRoute: typeof ApiModerateRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
+  CheckoutProductIdRoute: typeof CheckoutProductIdRoute
   InboxUserIdRoute: typeof InboxUserIdRoute
   LegalDocRoute: typeof LegalDocRoute
   PaymentReturnRoute: typeof PaymentReturnRoute
   ProductIdRoute: typeof ProductIdRoute
   ShopIdRoute: typeof ShopIdRoute
+  ApiPaypalCaptureRoute: typeof ApiPaypalCaptureRoute
   ApiPaystackInitiateRoute: typeof ApiPaystackInitiateRoute
   ApiPaystackVerifyRoute: typeof ApiPaystackVerifyRoute
   ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ProductIdEditRoute: typeof ProductIdEditRoute
+  ApiPublicPaypalPollRoute: typeof ApiPublicPaypalPollRoute
+  ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -510,6 +607,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments'
       preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -610,6 +714,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
     '/legal/$doc': {
       id: '/legal/$doc'
       path: '/legal/$doc'
@@ -622,6 +733,13 @@ declare module '@tanstack/react-router' {
       path: '/inbox/$userId'
       fullPath: '/inbox/$userId'
       preLoaderRoute: typeof InboxUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$productId': {
+      id: '/checkout/$productId'
+      path: '/checkout/$productId'
+      fullPath: '/checkout/$productId'
+      preLoaderRoute: typeof CheckoutProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/review-appeal': {
@@ -666,6 +784,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaystackInitiateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/paypal/capture': {
+      id: '/api/paypal/capture'
+      path: '/api/paypal/capture'
+      fullPath: '/api/paypal/capture'
+      preLoaderRoute: typeof ApiPaypalCaptureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
       path: '/api/public/paystack/webhook'
@@ -673,8 +798,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/paypal/webhook': {
+      id: '/api/public/paypal/webhook'
+      path: '/api/public/paypal/webhook'
+      fullPath: '/api/public/paypal/webhook'
+      preLoaderRoute: typeof ApiPublicPaypalWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paypal/poll': {
+      id: '/api/public/paypal/poll'
+      path: '/api/public/paypal/poll'
+      fullPath: '/api/public/paypal/poll'
+      preLoaderRoute: typeof ApiPublicPaypalPollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -688,6 +838,7 @@ const rootRouteChildren: RootRouteChildren = {
   KycRoute: KycRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRouteWithChildren,
   PaymentsRoute: PaymentsRoute,
   PreferencesRoute: PreferencesRoute,
   PrivacyRoute: PrivacyRoute,
@@ -697,28 +848,24 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
   SettingsRoute: SettingsRoute,
+  WalletRoute: WalletRoute,
   ApiModerateRoute: ApiModerateRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
+  CheckoutProductIdRoute: CheckoutProductIdRoute,
   InboxUserIdRoute: InboxUserIdRoute,
   LegalDocRoute: LegalDocRoute,
   PaymentReturnRoute: PaymentReturnRoute,
   ProductIdRoute: ProductIdRoute,
   ShopIdRoute: ShopIdRoute,
+  ApiPaypalCaptureRoute: ApiPaypalCaptureRoute,
   ApiPaystackInitiateRoute: ApiPaystackInitiateRoute,
   ApiPaystackVerifyRoute: ApiPaystackVerifyRoute,
   ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ProductIdEditRoute: ProductIdEditRoute,
+  ApiPublicPaypalPollRoute: ApiPublicPaypalPollRoute,
+  ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
