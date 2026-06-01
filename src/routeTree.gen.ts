@@ -33,6 +33,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIdRouteImport } from './routes/shop.$id'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as PaymentReturnRouteImport } from './routes/payment.return'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
 import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
@@ -167,6 +168,11 @@ const PaymentReturnRoute = PaymentReturnRouteImport.update({
   path: '/payment/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
 const LegalDocRoute = LegalDocRouteImport.update({
   id: '/legal/$doc',
   path: '/legal/$doc',
@@ -246,7 +252,7 @@ export interface FileRoutesByFullPath {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
@@ -285,7 +292,7 @@ export interface FileRoutesByTo {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
@@ -325,7 +333,7 @@ export interface FileRoutesById {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
-  '/orders': typeof OrdersRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox_/$userId': typeof InboxUserIdRoute
   '/legal/$doc': typeof LegalDocRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
@@ -420,6 +430,7 @@ export interface FileRouteTypes {
     | '/checkout/$productId'
     | '/inbox/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
@@ -459,6 +470,7 @@ export interface FileRouteTypes {
     | '/checkout/$productId'
     | '/inbox_/$userId'
     | '/legal/$doc'
+    | '/orders/$id'
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
@@ -484,7 +496,7 @@ export interface RootRouteChildren {
   KycRoute: typeof KycRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
-  OrdersRoute: typeof OrdersRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
   PaymentsRoute: typeof PaymentsRoute
   PreferencesRoute: typeof PreferencesRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -682,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
     '/legal/$doc': {
       id: '/legal/$doc'
       path: '/legal/$doc'
@@ -776,6 +795,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -788,7 +818,7 @@ const rootRouteChildren: RootRouteChildren = {
   KycRoute: KycRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
-  OrdersRoute: OrdersRoute,
+  OrdersRoute: OrdersRouteWithChildren,
   PaymentsRoute: PaymentsRoute,
   PreferencesRoute: PreferencesRoute,
   PrivacyRoute: PrivacyRoute,
