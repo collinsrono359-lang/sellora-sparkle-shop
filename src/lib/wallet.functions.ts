@@ -65,10 +65,7 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
     const newBal = Number((Number(wallet.available_usd) - amt).toFixed(2));
     const { error: updErr } = await supabaseAdmin
       .from("seller_wallets")
-      .update({
-        available_usd: newBal,
-        lifetime_withdrawn_usd: undefined, // updated on success
-      })
+      .update({ available_usd: newBal })
       .eq("seller_id", userId)
       .gte("available_usd", amt);
     if (updErr) throw new Error(updErr.message);
@@ -100,6 +97,12 @@ export const requestWithdrawal = createServerFn({ method: "POST" })
       await supabaseAdmin.from("withdrawals").update({
         paypal_batch_id: ppBatchId, raw_paypal: payout as any,
       }).eq("id", withdrawal.id);
+      // Bump lifetime withdrawn
+      const { data: w2 } = await supabaseAdmin.from("seller_wallets")
+        .select("lifetime_withdrawn_usd").eq("seller_id", userId).maybeSingle();
+      await supabaseAdmin.from("seller_wallets").update({
+        lifetime_withdrawn_usd: Number((Number(w2?.lifetime_withdrawn_usd || 0) + amt).toFixed(2)),
+      }).eq("seller_id", userId);
       return { ok: true, withdrawalId: withdrawal.id, batchId: ppBatchId };
     } catch (e: any) {
       // Refund wallet
