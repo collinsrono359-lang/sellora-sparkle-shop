@@ -18,6 +18,7 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as KycRouteImport } from './routes/kyc'
@@ -89,6 +90,11 @@ const PreferencesRoute = PreferencesRouteImport.update({
 const PaymentsRoute = PaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -278,6 +285,7 @@ export interface FileRoutesByTo {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/kyc': typeof KycRoute
   '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/payments': typeof PaymentsRoute
   '/preferences': typeof PreferencesRoute
   '/privacy': typeof PrivacyRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/notifications'
     | '/onboarding'
+    | '/orders'
     | '/payments'
     | '/preferences'
     | '/privacy'
@@ -472,6 +484,7 @@ export interface RootRouteChildren {
   KycRoute: typeof KycRoute
   NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRoute
   PaymentsRoute: typeof PaymentsRoute
   PreferencesRoute: typeof PreferencesRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -562,6 +575,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments'
       preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -768,6 +788,7 @@ const rootRouteChildren: RootRouteChildren = {
   KycRoute: KycRoute,
   NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRoute,
   PaymentsRoute: PaymentsRoute,
   PreferencesRoute: PreferencesRoute,
   PrivacyRoute: PrivacyRoute,
