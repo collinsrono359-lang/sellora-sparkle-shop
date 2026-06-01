@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SellRouteImport } from './routes/sell'
 import { Route as SearchRouteImport } from './routes/search'
@@ -48,6 +49,11 @@ import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/publi
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
 import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
 
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -302,6 +309,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -343,6 +351,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
+  '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -425,6 +435,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -465,6 +476,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sell'
     | '/settings'
+    | '/wallet'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -506,6 +518,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
   SettingsRoute: typeof SettingsRoute
+  WalletRoute: typeof WalletRoute
   ApiModerateRoute: typeof ApiModerateRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
   CheckoutProductIdRoute: typeof CheckoutProductIdRoute
@@ -526,6 +539,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -828,6 +848,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
   SettingsRoute: SettingsRoute,
+  WalletRoute: WalletRoute,
   ApiModerateRoute: ApiModerateRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
   CheckoutProductIdRoute: CheckoutProductIdRoute,
