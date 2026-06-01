@@ -40,7 +40,9 @@ import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPaystackVerifyRouteImport } from './routes/api/paystack.verify'
 import { Route as ApiPaystackInitiateRouteImport } from './routes/api/paystack.initiate'
+import { Route as ApiPaypalCaptureRouteImport } from './routes/api/paypal/capture'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
+import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -197,12 +199,22 @@ const ApiPaystackInitiateRoute = ApiPaystackInitiateRouteImport.update({
   path: '/api/paystack/initiate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPaypalCaptureRoute = ApiPaypalCaptureRouteImport.update({
+  id: '/api/paypal/capture',
+  path: '/api/paypal/capture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack/webhook',
     path: '/api/public/paystack/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaypalWebhookRoute = ApiPublicPaypalWebhookRouteImport.update({
+  id: '/api/public/paypal/webhook',
+  path: '/api/public/paypal/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -232,10 +244,12 @@ export interface FileRoutesByFullPath {
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -266,10 +280,12 @@ export interface FileRoutesByTo {
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
@@ -301,10 +317,12 @@ export interface FileRoutesById {
   '/payment/return': typeof PaymentReturnRoute
   '/product/$id': typeof ProductIdRoute
   '/shop/$id': typeof ShopIdRoute
+  '/api/paypal/capture': typeof ApiPaypalCaptureRoute
   '/api/paystack/initiate': typeof ApiPaystackInitiateRoute
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id_/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
@@ -337,10 +355,12 @@ export interface FileRouteTypes {
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -371,10 +391,12 @@ export interface FileRouteTypes {
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   id:
     | '__root__'
@@ -405,10 +427,12 @@ export interface FileRouteTypes {
     | '/payment/return'
     | '/product/$id'
     | '/shop/$id'
+    | '/api/paypal/capture'
     | '/api/paystack/initiate'
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id_/edit'
+    | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -440,10 +464,12 @@ export interface RootRouteChildren {
   PaymentReturnRoute: typeof PaymentReturnRoute
   ProductIdRoute: typeof ProductIdRoute
   ShopIdRoute: typeof ShopIdRoute
+  ApiPaypalCaptureRoute: typeof ApiPaypalCaptureRoute
   ApiPaystackInitiateRoute: typeof ApiPaystackInitiateRoute
   ApiPaystackVerifyRoute: typeof ApiPaystackVerifyRoute
   ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ProductIdEditRoute: typeof ProductIdEditRoute
+  ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
@@ -666,11 +692,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaystackInitiateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/paypal/capture': {
+      id: '/api/paypal/capture'
+      path: '/api/paypal/capture'
+      fullPath: '/api/paypal/capture'
+      preLoaderRoute: typeof ApiPaypalCaptureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
       path: '/api/public/paystack/webhook'
       fullPath: '/api/public/paystack/webhook'
       preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paypal/webhook': {
+      id: '/api/public/paypal/webhook'
+      path: '/api/public/paypal/webhook'
+      fullPath: '/api/public/paypal/webhook'
+      preLoaderRoute: typeof ApiPublicPaypalWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -704,12 +744,23 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentReturnRoute: PaymentReturnRoute,
   ProductIdRoute: ProductIdRoute,
   ShopIdRoute: ShopIdRoute,
+  ApiPaypalCaptureRoute: ApiPaypalCaptureRoute,
   ApiPaystackInitiateRoute: ApiPaystackInitiateRoute,
   ApiPaystackVerifyRoute: ApiPaystackVerifyRoute,
   ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ProductIdEditRoute: ProductIdEditRoute,
+  ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
