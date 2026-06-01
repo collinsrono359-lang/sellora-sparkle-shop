@@ -43,6 +43,7 @@ import { Route as ApiPaystackInitiateRouteImport } from './routes/api/paystack.i
 import { Route as ApiPaypalCaptureRouteImport } from './routes/api/paypal/capture'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
+import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -215,6 +216,11 @@ const ApiPublicPaypalWebhookRoute = ApiPublicPaypalWebhookRouteImport.update({
   path: '/api/public/paypal/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaypalPollRoute = ApiPublicPaypalPollRouteImport.update({
+  id: '/api/public/paypal/poll',
+  path: '/api/public/paypal/poll',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -285,6 +292,7 @@ export interface FileRoutesByTo {
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/api/paystack/verify': typeof ApiPaystackVerifyRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/product/$id_/edit': typeof ProductIdEditRoute
+  '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/poll'
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id/edit'
+    | '/api/public/paypal/poll'
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   id:
@@ -432,6 +443,7 @@ export interface FileRouteTypes {
     | '/api/paystack/verify'
     | '/api/public/bootstrap-admin'
     | '/product/$id_/edit'
+    | '/api/public/paypal/poll'
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
@@ -469,6 +481,7 @@ export interface RootRouteChildren {
   ApiPaystackVerifyRoute: typeof ApiPaystackVerifyRoute
   ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ProductIdEditRoute: typeof ProductIdEditRoute
+  ApiPublicPaypalPollRoute: typeof ApiPublicPaypalPollRoute
   ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
@@ -713,6 +726,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaypalWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/paypal/poll': {
+      id: '/api/public/paypal/poll'
+      path: '/api/public/paypal/poll'
+      fullPath: '/api/public/paypal/poll'
+      preLoaderRoute: typeof ApiPublicPaypalPollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -749,6 +769,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaystackVerifyRoute: ApiPaystackVerifyRoute,
   ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ProductIdEditRoute: ProductIdEditRoute,
+  ApiPublicPaypalPollRoute: ApiPublicPaypalPollRoute,
   ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
