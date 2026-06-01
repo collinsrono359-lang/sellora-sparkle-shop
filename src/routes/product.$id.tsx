@@ -31,6 +31,7 @@ interface Product {
   photos: string[];
   views: number;
   seller_id: string;
+  status: string;
 }
 
 function ProductPage() {
