@@ -61,6 +61,7 @@ function OrdersPage() {
 
 function StatusPill({ status }: { status: string }) {
   const cls: Record<string, string> = {
+    released: "bg-success/15 text-success",
     paid: "bg-success/15 text-success",
     pending: "bg-warning/15 text-warning",
     failed: "bg-destructive/15 text-destructive",
