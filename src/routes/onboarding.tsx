@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { describeGeoError, requestGeolocation } from "@/lib/geo";
 import { ArrowLeft, Camera, CheckCircle2, Loader2, MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/image";
 
 const ProfileSchema = z.object({
   display_name: z.string().trim().min(2, "Name must be at least 2 characters").max(80),
@@ -32,6 +33,7 @@ function Onboarding() {
   const [busy, setBusy] = useState(false);
   const [geoBusy, setGeoBusy] = useState(false);
   const [geoConfirmed, setGeoConfirmed] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
 
   const detectLocation = async () => {
     setGeoBusy(true);
@@ -40,6 +42,7 @@ function Onboarding() {
       setCountry(g.country);
       setLocation(g.city || "");
       setGeoConfirmed(true);
+      setManualMode(false);
       toast.success(`Location verified: ${g.city ? g.city + ", " : ""}${g.country}`);
     } catch (e) {
       toast.error(describeGeoError(e));
@@ -64,15 +67,17 @@ function Onboarding() {
     }
   }, [user, loading, navigate]);
 
-  const onPhoto = (f: File) => {
-    setPhotoFile(f);
-    setPreview(URL.createObjectURL(f));
+  const onPhoto = async (f: File) => {
+    const compressed = await compressImage(f, { maxDim: 800, quality: 0.85 });
+    setPhotoFile(compressed);
+    setPreview(URL.createObjectURL(compressed));
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!geoConfirmed || !country) return toast.error("Please tap 'Use my current location' to verify your country");
+    if (!country) return toast.error("Please add your country (use GPS or enter manually)");
+    if (!location) return toast.error("Please add your city / area");
     const parsed = ProfileSchema.safeParse({
       display_name: name,
       country,
@@ -150,11 +155,11 @@ function Onboarding() {
 
         <div className={`rounded-lg border p-3 ${geoConfirmed ? "border-primary/40 bg-primary/5" : "border-dashed border-border bg-card"}`}>
           <p className="mb-1 flex items-center gap-1 text-sm font-medium">
-            Verify your location <span className="text-primary">*</span>
+            Your location <span className="text-primary">*</span>
             {geoConfirmed && <CheckCircle2 className="h-4 w-4 text-success" />}
           </p>
           <p className="mb-2 text-xs text-muted-foreground">
-            Your country is locked from device GPS to keep the marketplace honest. You can refine the city below.
+            Use GPS for a verified location, or enter manually if GPS isn't available.
           </p>
           <button
             type="button"
@@ -165,21 +170,43 @@ function Onboarding() {
             {geoBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
             {geoConfirmed ? "Re-detect my location" : "Use my current location"}
           </button>
+          <button
+            type="button"
+            onClick={() => { setManualMode((v) => !v); setGeoConfirmed(false); }}
+            className="mt-2 w-full text-center text-xs text-primary underline"
+          >
+            {manualMode ? "Use GPS instead" : "Enter location manually"}
+          </button>
         </div>
 
-        <Field label="Country (locked to GPS)" required>
-          <input value={country} readOnly placeholder="Tap 'Use my current location' above" className="input cursor-not-allowed bg-muted text-muted-foreground" />
+        <Field label={manualMode ? "Country (manual)" : "Country (locked to GPS)"} required>
+          <input
+            value={country}
+            onChange={(e) => manualMode && setCountry(e.target.value)}
+            readOnly={!manualMode}
+            maxLength={60}
+            placeholder={manualMode ? "e.g. Kenya" : "Tap 'Use my current location' above"}
+            className={`input ${!manualMode ? "cursor-not-allowed bg-muted text-muted-foreground" : ""}`}
+          />
         </Field>
 
-        <Field label="City / area (you can refine)" required>
-          <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={100} required disabled={!geoConfirmed} placeholder="e.g. Rongai" className="input" />
+        <Field label="City / area" required>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            maxLength={100}
+            required
+            disabled={!manualMode && !geoConfirmed}
+            placeholder="e.g. Rongai"
+            className="input"
+          />
         </Field>
 
         <Field label="Bio">
           <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} rows={3} className="input min-h-[88px] py-2" />
         </Field>
 
-        <button disabled={busy || !geoConfirmed} className="h-12 w-full rounded-md bg-[image:var(--gradient-primary)] font-semibold text-primary-foreground disabled:opacity-60">
+        <button disabled={busy || !country || !location} className="h-12 w-full rounded-md bg-[image:var(--gradient-primary)] font-semibold text-primary-foreground disabled:opacity-60">
           {busy ? "Saving..." : "Save profile"}
         </button>
       </form>
