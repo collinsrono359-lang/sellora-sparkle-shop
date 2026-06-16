@@ -175,9 +175,11 @@ export function SuspensionAppealModal() {
 
     let selfiePath: string | null = null;
     if (selfieFile) {
-      const ext = selfieFile.name.split(".").pop() || "jpg";
+      const { compressImage } = await import("@/lib/image");
+      const compressed = await compressImage(selfieFile, { maxDim: 1600, quality: 0.88 });
+      const ext = compressed.name.split(".").pop() || "jpg";
       const path = `${user.id}/appeal-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("kyc").upload(path, selfieFile, { upsert: true });
+      const { error: upErr } = await supabase.storage.from("kyc").upload(path, compressed, { upsert: true });
       if (upErr) {
         setSubmitting(false);
         toast.error(upErr.message);
