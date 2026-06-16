@@ -12,6 +12,7 @@ import { detectBanned } from "@/lib/banned-items";
 import { currencyForCountry, toUsd, USD_REVIEW_THRESHOLD, formatMoney } from "@/lib/currency";
 import { ArrowLeft, CheckCircle2, Image as ImageIcon, Loader2, MapPin, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/image";
 
 const SellSchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters").max(120),
@@ -66,9 +67,10 @@ function Sell() {
     }
   };
 
-  const addPhotos = (files: FileList) => {
+  const addPhotos = async (files: FileList) => {
     const remaining = 3 - photos.length;
-    const next = Array.from(files).slice(0, remaining);
+    const raw = Array.from(files).slice(0, remaining);
+    const next = await Promise.all(raw.map((f) => compressImage(f, { maxDim: 1600, quality: 0.82 })));
     setPhotos([...photos, ...next]);
     setPreviews([...previews, ...next.map((f) => URL.createObjectURL(f))]);
   };
