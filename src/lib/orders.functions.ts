@@ -129,3 +129,24 @@ export const getOrder = createServerFn({ method: "GET" })
     const { data: order } = await supabase.from("orders").select("*").eq("id", data.id).maybeSingle();
     return { order };
   });
+
+// Buyer confirms they received the product → releases escrow to seller.
+export const confirmReceived = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { orderId: string }) => z.object({ orderId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { data: order, error } = await supabaseAdmin
+      .from("orders").select("*").eq("id", data.orderId).maybeSingle();
+    if (error || !order) throw new Error("Order not found");
+    if (order.buyer_id !== userId) throw new Error("Only the buyer can confirm receipt");
+    if (order.status !== "paid") throw new Error(`Cannot release: order is ${order.status}`);
+
+    const { error: uErr } = await supabaseAdmin
+      .from("orders")
+      .update({ status: "released" })
+      .eq("id", order.id)
+      .eq("status", "paid"); // guard against double-release
+    if (uErr) throw new Error(uErr.message);
+    return { ok: true, status: "released" as const };
+  });

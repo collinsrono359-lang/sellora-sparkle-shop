@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, BadgeCheck, Camera, CheckCircle2, Clock, Loader2, ShieldCheck, Upload, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { compressImage } from "@/lib/image";
 
 export const Route = createFileRoute("/kyc")({
   head: () => ({ meta: [{ title: "Identity Verification — Sellora" }] }),
@@ -45,9 +46,11 @@ function KYC() {
 
   const upload = async (file: File, kind: string) => {
     if (!user) throw new Error("Not signed in");
-    const ext = file.name.split(".").pop() || "jpg";
+    // Compress with high quality so IDs remain legible.
+    const compressed = await compressImage(file, { maxDim: 2000, quality: 0.9 });
+    const ext = compressed.name.split(".").pop() || "jpg";
     const path = `${user.id}/${kind}-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("kyc").upload(path, file, { upsert: false });
+    const { error } = await supabase.storage.from("kyc").upload(path, compressed, { upsert: false });
     if (error) throw error;
     return path;
   };

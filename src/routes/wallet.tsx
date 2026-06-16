@@ -67,10 +67,14 @@ function WalletPage() {
       <div className="rounded-lg border border-border bg-[image:var(--gradient-primary)] p-5 text-primary-foreground">
         <p className="text-sm opacity-90">Available balance</p>
         <p className="text-4xl font-bold">${Number(w.available_usd).toFixed(2)}</p>
-        <div className="mt-3 grid grid-cols-2 gap-2 text-xs opacity-90">
+        <div className="mt-3 grid grid-cols-3 gap-2 text-xs opacity-90">
+          <div>Pending (escrow): <strong>${Number(w.pending_usd).toFixed(2)}</strong></div>
           <div>Lifetime earned: <strong>${Number(w.lifetime_earned_usd).toFixed(2)}</strong></div>
           <div>Lifetime withdrawn: <strong>${Number(w.lifetime_withdrawn_usd).toFixed(2)}</strong></div>
         </div>
+        <p className="mt-2 text-[11px] opacity-80">
+          Pending funds release to Available when buyers confirm they received their orders.
+        </p>
       </div>
 
       <section className="mt-6 rounded-lg border border-border bg-card p-4">

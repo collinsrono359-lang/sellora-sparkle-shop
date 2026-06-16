@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/AppLayout";
-import { getOrder, reconcileOrder } from "@/lib/orders.functions";
-import { Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { getOrder, reconcileOrder, confirmReceived } from "@/lib/orders.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2, CheckCircle2, XCircle, Clock, PackageCheck } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/orders/$id")({
   component: OrderDetail,
@@ -11,9 +13,12 @@ export const Route = createFileRoute("/orders/$id")({
 
 function OrderDetail() {
   const { id } = Route.useParams();
+  const { user } = useAuth();
   const fetcher = useServerFn(getOrder);
   const reconcile = useServerFn(reconcileOrder);
+  const confirm = useServerFn(confirmReceived);
   const [order, setOrder] = useState<any>(null);
+  const [confirming, setConfirming] = useState(false);
   const timer = useRef<number | null>(null);
 
   const load = async () => {
@@ -46,6 +51,24 @@ function OrderDetail() {
 
   if (!order) return <AppLayout><div className="flex h-40 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div></AppLayout>;
 
+  const isBuyer = user?.id === order.buyer_id;
+  const isSeller = user?.id === order.seller_id;
+
+  const handleConfirm = async () => {
+    if (!window.confirm("Confirm you received this product? This releases payment to the seller and cannot be undone.")) return;
+    setConfirming(true);
+    try {
+      await confirm({ data: { orderId: order.id } });
+      toast.success("Payment released to seller");
+      const r = await fetcher({ data: { id } });
+      setOrder(r.order);
+    } catch (e: any) {
+      toast.error(e.message || "Could not release payment");
+    } finally {
+      setConfirming(false);
+    }
+  };
+
   return (
     <AppLayout>
       <h1 className="mb-2 text-xl font-bold">Order</h1>
@@ -57,7 +80,10 @@ function OrderDetail() {
           <p className="font-semibold capitalize">{order.status}</p>
           <p className="text-xs text-muted-foreground">
             {order.status === "pending" && "Waiting for PayPal confirmation. This page auto-refreshes."}
-            {order.status === "paid" && "Payment received. Seller has been credited."}
+            {order.status === "paid" && (isBuyer
+              ? "Payment received and held in escrow. Tap “Mark received” once the product arrives to release funds."
+              : "Buyer has paid. Funds are held in escrow until they confirm delivery.")}
+            {order.status === "released" && "Buyer confirmed delivery. Seller wallet credited."}
             {order.status === "failed" && "Payment failed or expired."}
             {order.status === "refunded" && "Payment was refunded."}
           </p>
@@ -74,6 +100,22 @@ function OrderDetail() {
         </div>
       </div>
 
+      {isBuyer && order.status === "paid" && (
+        <button
+          onClick={handleConfirm}
+          disabled={confirming}
+          className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[image:var(--gradient-primary)] font-semibold text-primary-foreground disabled:opacity-60"
+        >
+          {confirming ? <Loader2 className="h-5 w-5 animate-spin" /> : <PackageCheck className="h-5 w-5" />}
+          Mark product as received
+        </button>
+      )}
+      {isSeller && order.status === "paid" && (
+        <p className="mt-4 rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
+          Ship the product. Funds will release to your wallet once the buyer confirms receipt.
+        </p>
+      )}
+
       {order.status === "failed" && (
         <Link
           to="/checkout/$productId" params={{ productId: order.product_id }}
@@ -88,7 +130,8 @@ function OrderDetail() {
 }
 
 function StatusIcon({ status }: { status: string }) {
-  if (status === "paid") return <CheckCircle2 className="h-6 w-6 text-success" />;
+  if (status === "released") return <CheckCircle2 className="h-6 w-6 text-success" />;
+  if (status === "paid") return <PackageCheck className="h-6 w-6 text-primary" />;
   if (status === "failed") return <XCircle className="h-6 w-6 text-destructive" />;
   return <Clock className="h-6 w-6 text-warning animate-pulse" />;
 }
