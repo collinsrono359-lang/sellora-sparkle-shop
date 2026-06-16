@@ -426,6 +426,7 @@ export type Database = {
           product_id: string
           product_title: string
           raw_paypal: Json | null
+          released_at: string | null
           seller_id: string
           seller_net_usd: number
           shipping_address: Json | null
@@ -451,6 +452,7 @@ export type Database = {
           product_id: string
           product_title: string
           raw_paypal?: Json | null
+          released_at?: string | null
           seller_id: string
           seller_net_usd?: number
           shipping_address?: Json | null
@@ -476,6 +478,7 @@ export type Database = {
           product_id?: string
           product_title?: string
           raw_paypal?: Json | null
+          released_at?: string | null
           seller_id?: string
           seller_net_usd?: number
           shipping_address?: Json | null
@@ -1193,7 +1196,13 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       kyc_status: "pending" | "approved" | "rejected"
       notification_category: "messages" | "product" | "account" | "promotions"
-      order_status: "pending" | "paid" | "failed" | "refunded" | "cancelled"
+      order_status:
+        | "pending"
+        | "paid"
+        | "failed"
+        | "refunded"
+        | "cancelled"
+        | "released"
       payment_purpose:
         | "boost_product"
         | "verification"
@@ -1355,7 +1364,14 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       kyc_status: ["pending", "approved", "rejected"],
       notification_category: ["messages", "product", "account", "promotions"],
-      order_status: ["pending", "paid", "failed", "refunded", "cancelled"],
+      order_status: [
+        "pending",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled",
+        "released",
+      ],
       payment_purpose: [
         "boost_product",
         "verification",
