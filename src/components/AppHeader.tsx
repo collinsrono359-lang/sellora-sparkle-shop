@@ -79,6 +79,8 @@ export function AppHeader() {
                 )}
                 <DropdownMenuItem onClick={() => navigate({ to: "/onboarding" })}>Edit Profile</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/saved" })}>Saved</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: "/orders" })}>My Orders</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: "/wallet" })}>Seller Wallet</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}>
