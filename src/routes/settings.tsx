@@ -25,9 +25,8 @@ const SECTIONS: { title: string; items: Item[] }[] = [
     title: "SELLING",
     items: [
       { label: "Start Selling", sub: "List your first product!", Icon: Store, to: "/sell" },
-      { label: "Payments & Boosts", sub: "Pay via M-Pesa, card, or bank", Icon: CreditCard, to: "/payments" },
-      { label: "Payment Settings", sub: "Payout method & history", Icon: Wallet, to: "/payments" },
-      { label: "Verification & Boost", sub: "Get verified, boost listings", Icon: ShieldCheck, to: "/payments" },
+      { label: "Payments & Boosts", sub: "Boost listings, view payment history", Icon: CreditCard, to: "/payments" },
+      { label: "Seller Wallet", sub: "Balance, escrow & payouts", Icon: Wallet, to: "/wallet" },
     ],
   },
   {
