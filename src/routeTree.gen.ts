@@ -50,6 +50,7 @@ import { Route as ApiPublicV1OrdersRouteImport } from './routes/api/public/v1/or
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
 import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
+import { Route as ApiPublicV1UsersProfileRouteImport } from './routes/api/public/v1/users.profile'
 import { Route as ApiPublicV1SellersIdRouteImport } from './routes/api/public/v1/sellers.$id'
 import { Route as ApiPublicV1ProductsIdRouteImport } from './routes/api/public/v1/products.$id'
 import { Route as ApiPublicV1OrdersIdRouteImport } from './routes/api/public/v1/orders.$id'
@@ -261,6 +262,11 @@ const ApiPublicPaypalPollRoute = ApiPublicPaypalPollRouteImport.update({
   path: '/api/public/paypal/poll',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1UsersProfileRoute = ApiPublicV1UsersProfileRouteImport.update({
+  id: '/api/public/v1/users/profile',
+  path: '/api/public/v1/users/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1SellersIdRoute = ApiPublicV1SellersIdRouteImport.update({
   id: '/api/public/v1/sellers/$id',
   path: '/api/public/v1/sellers/$id',
@@ -328,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/api/public/v1/orders/$id': typeof ApiPublicV1OrdersIdRoute
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
   '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRouteWithChildren
+  '/api/public/v1/users/profile': typeof ApiPublicV1UsersProfileRoute
   '/api/public/v1/sellers/$id/products': typeof ApiPublicV1SellersIdProductsRoute
 }
 export interface FileRoutesByTo {
@@ -375,6 +382,7 @@ export interface FileRoutesByTo {
   '/api/public/v1/orders/$id': typeof ApiPublicV1OrdersIdRoute
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
   '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRouteWithChildren
+  '/api/public/v1/users/profile': typeof ApiPublicV1UsersProfileRoute
   '/api/public/v1/sellers/$id/products': typeof ApiPublicV1SellersIdProductsRoute
 }
 export interface FileRoutesById {
@@ -423,6 +431,7 @@ export interface FileRoutesById {
   '/api/public/v1/orders/$id': typeof ApiPublicV1OrdersIdRoute
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
   '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRouteWithChildren
+  '/api/public/v1/users/profile': typeof ApiPublicV1UsersProfileRoute
   '/api/public/v1/sellers/$id/products': typeof ApiPublicV1SellersIdProductsRoute
 }
 export interface FileRouteTypes {
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/orders/$id'
     | '/api/public/v1/products/$id'
     | '/api/public/v1/sellers/$id'
+    | '/api/public/v1/users/profile'
     | '/api/public/v1/sellers/$id/products'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -519,6 +529,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/orders/$id'
     | '/api/public/v1/products/$id'
     | '/api/public/v1/sellers/$id'
+    | '/api/public/v1/users/profile'
     | '/api/public/v1/sellers/$id/products'
   id:
     | '__root__'
@@ -566,6 +577,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/orders/$id'
     | '/api/public/v1/products/$id'
     | '/api/public/v1/sellers/$id'
+    | '/api/public/v1/users/profile'
     | '/api/public/v1/sellers/$id/products'
   fileRoutesById: FileRoutesById
 }
@@ -611,6 +623,7 @@ export interface RootRouteChildren {
   ApiPublicV1OrdersRoute: typeof ApiPublicV1OrdersRouteWithChildren
   ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRouteWithChildren
   ApiPublicV1SellersIdRoute: typeof ApiPublicV1SellersIdRouteWithChildren
+  ApiPublicV1UsersProfileRoute: typeof ApiPublicV1UsersProfileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -902,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaypalPollRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/users/profile': {
+      id: '/api/public/v1/users/profile'
+      path: '/api/public/v1/users/profile'
+      fullPath: '/api/public/v1/users/profile'
+      preLoaderRoute: typeof ApiPublicV1UsersProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/sellers/$id': {
       id: '/api/public/v1/sellers/$id'
       path: '/api/public/v1/sellers/$id'
@@ -1019,6 +1039,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicV1OrdersRoute: ApiPublicV1OrdersRouteWithChildren,
   ApiPublicV1ProductsRoute: ApiPublicV1ProductsRouteWithChildren,
   ApiPublicV1SellersIdRoute: ApiPublicV1SellersIdRouteWithChildren,
+  ApiPublicV1UsersProfileRoute: ApiPublicV1UsersProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
