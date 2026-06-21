@@ -49,6 +49,7 @@ import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
 import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
+import { Route as ApiPublicV1ProductsIdRouteImport } from './routes/api/public/v1/products.$id'
 
 const WalletRoute = WalletRouteImport.update({
   id: '/wallet',
@@ -251,6 +252,11 @@ const ApiPublicPaypalPollRoute = ApiPublicPaypalPollRouteImport.update({
   path: '/api/public/paypal/poll',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1ProductsIdRoute = ApiPublicV1ProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiPublicV1ProductsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -292,7 +298,8 @@ export interface FileRoutesByFullPath {
   '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
-  '/api/public/v1/products': typeof ApiPublicV1ProductsRoute
+  '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
+  '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -334,7 +341,8 @@ export interface FileRoutesByTo {
   '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
-  '/api/public/v1/products': typeof ApiPublicV1ProductsRoute
+  '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
+  '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -377,7 +385,8 @@ export interface FileRoutesById {
   '/api/public/paypal/poll': typeof ApiPublicPaypalPollRoute
   '/api/public/paypal/webhook': typeof ApiPublicPaypalWebhookRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
-  '/api/public/v1/products': typeof ApiPublicV1ProductsRoute
+  '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
+  '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -422,6 +431,7 @@ export interface FileRouteTypes {
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
+    | '/api/public/v1/products/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -464,6 +474,7 @@ export interface FileRouteTypes {
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
+    | '/api/public/v1/products/$id'
   id:
     | '__root__'
     | '/'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/api/public/paypal/webhook'
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
+    | '/api/public/v1/products/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -547,7 +559,7 @@ export interface RootRouteChildren {
   ApiPublicPaypalPollRoute: typeof ApiPublicPaypalPollRoute
   ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
-  ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRoute
+  ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -832,6 +844,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaypalPollRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/products/$id': {
+      id: '/api/public/v1/products/$id'
+      path: '/$id'
+      fullPath: '/api/public/v1/products/$id'
+      preLoaderRoute: typeof ApiPublicV1ProductsIdRouteImport
+      parentRoute: typeof ApiPublicV1ProductsRoute
+    }
   }
 }
 
@@ -845,6 +864,17 @@ const OrdersRouteChildren: OrdersRouteChildren = {
 
 const OrdersRouteWithChildren =
   OrdersRoute._addFileChildren(OrdersRouteChildren)
+
+interface ApiPublicV1ProductsRouteChildren {
+  ApiPublicV1ProductsIdRoute: typeof ApiPublicV1ProductsIdRoute
+}
+
+const ApiPublicV1ProductsRouteChildren: ApiPublicV1ProductsRouteChildren = {
+  ApiPublicV1ProductsIdRoute: ApiPublicV1ProductsIdRoute,
+}
+
+const ApiPublicV1ProductsRouteWithChildren =
+  ApiPublicV1ProductsRoute._addFileChildren(ApiPublicV1ProductsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -885,7 +915,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaypalPollRoute: ApiPublicPaypalPollRoute,
   ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
-  ApiPublicV1ProductsRoute: ApiPublicV1ProductsRoute,
+  ApiPublicV1ProductsRoute: ApiPublicV1ProductsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
