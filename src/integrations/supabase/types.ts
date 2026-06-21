@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_request_logs: {
+        Row: {
+          app_id: string | null
+          created_at: string
+          error: string | null
+          id: string
+          ip: string | null
+          latency_ms: number | null
+          method: string
+          path: string
+          status_code: number
+          user_agent: string | null
+        }
+        Insert: {
+          app_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          ip?: string | null
+          latency_ms?: number | null
+          method: string
+          path: string
+          status_code: number
+          user_agent?: string | null
+        }
+        Update: {
+          app_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          ip?: string | null
+          latency_ms?: number | null
+          method?: string
+          path?: string
+          status_code?: number
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_request_logs_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "developer_apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_clears: {
         Row: {
           cleared_at: string
@@ -92,6 +139,57 @@ export type Database = {
           name?: string
           share_token?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      developer_apps: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          owner_id: string
+          platform_fee_pct: number
+          rate_limit_per_min: number
+          scopes: string[]
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          owner_id: string
+          platform_fee_pct?: number
+          rate_limit_per_min?: number
+          scopes?: string[]
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          owner_id?: string
+          platform_fee_pct?: number
+          rate_limit_per_min?: number
+          scopes?: string[]
+          updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -1130,6 +1228,97 @@ export type Database = {
           },
         ]
       }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivered_at: string | null
+          endpoint_id: string
+          event_type: string
+          id: string
+          last_error: string | null
+          last_status_code: number | null
+          next_attempt_at: string
+          payload: Json
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id: string
+          event_type: string
+          id?: string
+          last_error?: string | null
+          last_status_code?: number | null
+          next_attempt_at?: string
+          payload: Json
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id?: string
+          event_type?: string
+          id?: string
+          last_error?: string | null
+          last_status_code?: number | null
+          next_attempt_at?: string
+          payload?: Json
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_endpoints: {
+        Row: {
+          active: boolean
+          app_id: string
+          created_at: string
+          events: string[]
+          id: string
+          secret: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          app_id: string
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          app_id?: string
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_endpoints_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "developer_apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       withdrawals: {
         Row: {
           amount_usd: number
@@ -1180,6 +1369,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      enqueue_webhook_event: {
+        Args: { _event_type: string; _payload: Json }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
