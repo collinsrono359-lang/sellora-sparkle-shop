@@ -79,10 +79,16 @@ export const updateDevApp = createServerFn({ method: "POST" })
     }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const patch: Record<string, unknown> = {};
-    for (const k of ["active", "scopes", "platform_fee_pct", "name", "description", "website"] as const) {
-      if (data[k] !== undefined) patch[k] = data[k];
-    }
+    const patch: {
+      active?: boolean; scopes?: string[]; platform_fee_pct?: number;
+      name?: string; description?: string | null; website?: string | null;
+    } = {};
+    if (data.active !== undefined) patch.active = data.active;
+    if (data.scopes !== undefined) patch.scopes = data.scopes;
+    if (data.platform_fee_pct !== undefined) patch.platform_fee_pct = data.platform_fee_pct;
+    if (data.name !== undefined) patch.name = data.name;
+    if (data.description !== undefined) patch.description = data.description || null;
+    if (data.website !== undefined) patch.website = data.website || null;
     const { error } = await supabase.from("developer_apps").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
