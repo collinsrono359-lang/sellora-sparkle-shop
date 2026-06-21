@@ -40,6 +40,7 @@ import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
 import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
 import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
+import { Route as AuthenticatedDeveloperRouteImport } from './routes/_authenticated/developer'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPaystackVerifyRouteImport } from './routes/api/paystack.verify'
@@ -212,6 +213,11 @@ const ApiModerateRoute = ApiModerateRouteImport.update({
   path: '/api/moderate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDeveloperRoute = AuthenticatedDeveloperRouteImport.update({
+  id: '/_authenticated/developer',
+  path: '/developer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdEditRoute = ProductIdEditRouteImport.update({
   id: '/product/$id_/edit',
   path: '/product/$id/edit',
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -368,6 +375,7 @@ export interface FileRoutesByTo {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -418,6 +426,7 @@ export interface FileRoutesById {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
+  '/_authenticated/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -469,6 +478,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
+    | '/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
+    | '/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -567,6 +578,7 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
+    | '/_authenticated/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -617,6 +629,7 @@ export interface RootRouteChildren {
   SellRoute: typeof SellRoute
   SettingsRoute: typeof SettingsRoute
   WalletRoute: typeof WalletRoute
+  AuthenticatedDeveloperRoute: typeof AuthenticatedDeveloperRoute
   ApiModerateRoute: typeof ApiModerateRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
   CheckoutProductIdRoute: typeof CheckoutProductIdRoute
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiModerateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/developer': {
+      id: '/_authenticated/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof AuthenticatedDeveloperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id_/edit': {
       id: '/product/$id_/edit'
       path: '/product/$id/edit'
@@ -1041,6 +1061,7 @@ const rootRouteChildren: RootRouteChildren = {
   SellRoute: SellRoute,
   SettingsRoute: SettingsRoute,
   WalletRoute: WalletRoute,
+  AuthenticatedDeveloperRoute: AuthenticatedDeveloperRoute,
   ApiModerateRoute: ApiModerateRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
   CheckoutProductIdRoute: CheckoutProductIdRoute,
