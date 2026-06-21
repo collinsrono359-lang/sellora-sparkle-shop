@@ -49,6 +49,7 @@ import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 import { Route as ApiPublicPaypalWebhookRouteImport } from './routes/api/public/paypal/webhook'
 import { Route as ApiPublicPaypalPollRouteImport } from './routes/api/public/paypal/poll'
+import { Route as ApiPublicV1SellersIdRouteImport } from './routes/api/public/v1/sellers.$id'
 import { Route as ApiPublicV1ProductsIdRouteImport } from './routes/api/public/v1/products.$id'
 
 const WalletRoute = WalletRouteImport.update({
@@ -252,6 +253,11 @@ const ApiPublicPaypalPollRoute = ApiPublicPaypalPollRouteImport.update({
   path: '/api/public/paypal/poll',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1SellersIdRoute = ApiPublicV1SellersIdRouteImport.update({
+  id: '/api/public/v1/sellers/$id',
+  path: '/api/public/v1/sellers/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1ProductsIdRoute = ApiPublicV1ProductsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -300,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
+  '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -343,6 +350,7 @@ export interface FileRoutesByTo {
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
+  '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -387,6 +395,7 @@ export interface FileRoutesById {
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/products/$id': typeof ApiPublicV1ProductsIdRoute
+  '/api/public/v1/sellers/$id': typeof ApiPublicV1SellersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
     | '/api/public/v1/products/$id'
+    | '/api/public/v1/sellers/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -475,6 +485,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
     | '/api/public/v1/products/$id'
+    | '/api/public/v1/sellers/$id'
   id:
     | '__root__'
     | '/'
@@ -518,6 +529,7 @@ export interface FileRouteTypes {
     | '/api/public/paystack/webhook'
     | '/api/public/v1/products'
     | '/api/public/v1/products/$id'
+    | '/api/public/v1/sellers/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -560,6 +572,7 @@ export interface RootRouteChildren {
   ApiPublicPaypalWebhookRoute: typeof ApiPublicPaypalWebhookRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRouteWithChildren
+  ApiPublicV1SellersIdRoute: typeof ApiPublicV1SellersIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -844,6 +857,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaypalPollRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/sellers/$id': {
+      id: '/api/public/v1/sellers/$id'
+      path: '/api/public/v1/sellers/$id'
+      fullPath: '/api/public/v1/sellers/$id'
+      preLoaderRoute: typeof ApiPublicV1SellersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/products/$id': {
       id: '/api/public/v1/products/$id'
       path: '/$id'
@@ -916,6 +936,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaypalWebhookRoute: ApiPublicPaypalWebhookRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicV1ProductsRoute: ApiPublicV1ProductsRouteWithChildren,
+  ApiPublicV1SellersIdRoute: ApiPublicV1SellersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
