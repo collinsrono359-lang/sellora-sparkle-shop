@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
-import { ArrowLeft, BadgeCheck, Bell, ChevronRight, CreditCard, FileText, Gift, Globe, HelpCircle, Languages, LogOut, Moon, Lock, MessageSquare, ScrollText, ShieldAlert, ShieldCheck, Star, Store, TriangleAlert, UserPen, Wallet } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bell, ChevronRight, Code2, CreditCard, FileText, Gift, Globe, HelpCircle, Languages, LogOut, Moon, Lock, MessageSquare, ScrollText, ShieldAlert, ShieldCheck, Star, Store, TriangleAlert, UserPen, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/settings")({
@@ -27,6 +27,7 @@ const SECTIONS: { title: string; items: Item[] }[] = [
       { label: "Start Selling", sub: "List your first product!", Icon: Store, to: "/sell" },
       { label: "Payments & Boosts", sub: "Boost listings, view payment history", Icon: CreditCard, to: "/payments" },
       { label: "Seller Wallet", sub: "Balance, escrow & payouts", Icon: Wallet, to: "/wallet" },
+      { label: "Developer Platform", sub: "API keys, webhooks, integrations", Icon: Code2, to: "/developer" },
     ],
   },
   {
