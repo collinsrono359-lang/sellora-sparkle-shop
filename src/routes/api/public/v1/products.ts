@@ -16,7 +16,7 @@ export const Route = createFileRoute("/api/public/v1/products")({
           const q = url.searchParams.get("q");
           let qb = supabaseAdmin
             .from("products")
-            .select("id,title,description,price,currency,category,images,seller_id,status,created_at")
+            .select("id,title,description,price,currency,category,photos,seller_id,status,condition,created_at")
             .eq("status", "active")
             .order("created_at", { ascending: false })
             .range(offset, offset + limit - 1);
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/api/public/v1/products")({
           try { body = await request.json(); } catch { return jsonErr(400, "invalid_json", "Body must be JSON"); }
           const required = ["title", "price", "currency"];
           for (const k of required) if (!body[k]) return jsonErr(400, "missing_field", `Missing: ${k}`);
+          if (!body.category) return jsonErr(400, "missing_field", "Missing: category");
           const { data, error } = await supabaseAdmin
             .from("products")
             .insert({
@@ -40,8 +41,10 @@ export const Route = createFileRoute("/api/public/v1/products")({
               description: body.description ? String(body.description).slice(0, 5000) : null,
               price: Number(body.price),
               currency: String(body.currency).slice(0, 8),
-              category: body.category ? String(body.category).slice(0, 80) : null,
-              images: Array.isArray(body.images) ? body.images.slice(0, 10) : [],
+              category: String(body.category).slice(0, 80),
+              condition: body.condition || "used",
+              photos: Array.isArray(body.photos) ? body.photos.slice(0, 10) : (Array.isArray(body.images) ? body.images.slice(0, 10) : []),
+              shipping_available: !!body.shipping_available,
               status: "active",
             })
             .select("id,title,price,currency,status,created_at")
