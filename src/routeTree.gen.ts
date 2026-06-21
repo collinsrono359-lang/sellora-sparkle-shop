@@ -26,6 +26,7 @@ import { Route as KycRouteImport } from './routes/kyc'
 import { Route as InviteRouteImport } from './routes/invite'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -40,7 +41,6 @@ import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
 import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
 import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
-import { Route as AuthenticatedDeveloperRouteImport } from './routes/_authenticated/developer'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPaystackVerifyRouteImport } from './routes/api/paystack.verify'
@@ -143,6 +143,11 @@ const HelpRoute = HelpRouteImport.update({
   path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperRoute = DeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -211,11 +216,6 @@ const ApiReviewAppealRoute = ApiReviewAppealRouteImport.update({
 const ApiModerateRoute = ApiModerateRouteImport.update({
   id: '/api/moderate',
   path: '/api/moderate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedDeveloperRoute = AuthenticatedDeveloperRouteImport.update({
-  id: '/_authenticated/developer',
-  path: '/developer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductIdEditRoute = ProductIdEditRouteImport.update({
@@ -308,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/developer': typeof DeveloperRoute
   '/help': typeof HelpRoute
   '/inbox': typeof InboxRoute
   '/invite': typeof InviteRoute
@@ -325,7 +326,6 @@ export interface FileRoutesByFullPath {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
-  '/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -358,6 +358,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/developer': typeof DeveloperRoute
   '/help': typeof HelpRoute
   '/inbox': typeof InboxRoute
   '/invite': typeof InviteRoute
@@ -375,7 +376,6 @@ export interface FileRoutesByTo {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
-  '/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -409,6 +409,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/developer': typeof DeveloperRoute
   '/help': typeof HelpRoute
   '/inbox': typeof InboxRoute
   '/invite': typeof InviteRoute
@@ -426,7 +427,6 @@ export interface FileRoutesById {
   '/sell': typeof SellRoute
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
-  '/_authenticated/developer': typeof AuthenticatedDeveloperRoute
   '/api/moderate': typeof ApiModerateRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
@@ -461,6 +461,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/dashboard'
+    | '/developer'
     | '/help'
     | '/inbox'
     | '/invite'
@@ -478,7 +479,6 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
-    | '/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -511,6 +511,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/dashboard'
+    | '/developer'
     | '/help'
     | '/inbox'
     | '/invite'
@@ -528,7 +529,6 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
-    | '/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -561,6 +561,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/dashboard'
+    | '/developer'
     | '/help'
     | '/inbox'
     | '/invite'
@@ -578,7 +579,6 @@ export interface FileRouteTypes {
     | '/sell'
     | '/settings'
     | '/wallet'
-    | '/_authenticated/developer'
     | '/api/moderate'
     | '/api/review-appeal'
     | '/checkout/$productId'
@@ -612,6 +612,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  DeveloperRoute: typeof DeveloperRoute
   HelpRoute: typeof HelpRoute
   InboxRoute: typeof InboxRoute
   InviteRoute: typeof InviteRoute
@@ -629,7 +630,6 @@ export interface RootRouteChildren {
   SellRoute: typeof SellRoute
   SettingsRoute: typeof SettingsRoute
   WalletRoute: typeof WalletRoute
-  AuthenticatedDeveloperRoute: typeof AuthenticatedDeveloperRoute
   ApiModerateRoute: typeof ApiModerateRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
   CheckoutProductIdRoute: typeof CheckoutProductIdRoute
@@ -774,6 +774,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer': {
+      id: '/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof DeveloperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -870,13 +877,6 @@ declare module '@tanstack/react-router' {
       path: '/api/moderate'
       fullPath: '/api/moderate'
       preLoaderRoute: typeof ApiModerateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/developer': {
-      id: '/_authenticated/developer'
-      path: '/developer'
-      fullPath: '/developer'
-      preLoaderRoute: typeof AuthenticatedDeveloperRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/$id_/edit': {
@@ -1044,6 +1044,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  DeveloperRoute: DeveloperRoute,
   HelpRoute: HelpRoute,
   InboxRoute: InboxRoute,
   InviteRoute: InviteRoute,
@@ -1061,7 +1062,6 @@ const rootRouteChildren: RootRouteChildren = {
   SellRoute: SellRoute,
   SettingsRoute: SettingsRoute,
   WalletRoute: WalletRoute,
-  AuthenticatedDeveloperRoute: AuthenticatedDeveloperRoute,
   ApiModerateRoute: ApiModerateRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
   CheckoutProductIdRoute: CheckoutProductIdRoute,

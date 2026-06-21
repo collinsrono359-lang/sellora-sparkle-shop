@@ -15,7 +15,7 @@ import {
   listRecentDeliveries, listRecentApiLogs,
 } from "@/lib/devapps.functions";
 
-export const Route = createFileRoute("/_authenticated/developer")({
+export const Route = createFileRoute("/developer")({
   head: () => ({ meta: [{ title: "Developer Platform — Sellora" }] }),
   component: Developer,
 });
