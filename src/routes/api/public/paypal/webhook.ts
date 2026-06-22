@@ -48,6 +48,10 @@ export const Route = createFileRoute("/api/public/paypal/webhook")({
               await supabaseAdmin.from("orders").update({
                 status: "paid", paypal_capture_id: res.id, raw_paypal: evt,
               }).eq("paypal_order_id", ppOrderId).eq("status", "pending");
+              // Also mark any matching API payment as paid (trigger credits wallet)
+              await supabaseAdmin.from("api_payments").update({
+                status: "paid", paypal_capture_id: res.id, raw_paypal: evt,
+              }).eq("paypal_order_id", ppOrderId).eq("status", "pending");
             }
           } else if (type === "PAYMENT.CAPTURE.DENIED" || type === "PAYMENT.CAPTURE.DECLINED") {
             const ppOrderId = res.supplementary_data?.related_ids?.order_id;
@@ -55,11 +59,17 @@ export const Route = createFileRoute("/api/public/paypal/webhook")({
               await supabaseAdmin.from("orders").update({
                 status: "failed", raw_paypal: evt,
               }).eq("paypal_order_id", ppOrderId);
+              await supabaseAdmin.from("api_payments").update({
+                status: "failed", raw_paypal: evt,
+              }).eq("paypal_order_id", ppOrderId);
             }
           } else if (type === "PAYMENT.CAPTURE.REFUNDED") {
             const ppOrderId = res.supplementary_data?.related_ids?.order_id;
             if (ppOrderId) {
               await supabaseAdmin.from("orders").update({
+                status: "refunded", raw_paypal: evt,
+              }).eq("paypal_order_id", ppOrderId);
+              await supabaseAdmin.from("api_payments").update({
                 status: "refunded", raw_paypal: evt,
               }).eq("paypal_order_id", ppOrderId);
             }

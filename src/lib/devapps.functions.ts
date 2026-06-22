@@ -185,3 +185,17 @@ export const listRecentApiLogs = createServerFn({ method: "GET" })
       .limit(50);
     return { logs: rows || [] };
   });
+
+export const listApiPayments = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { appId: string }) => z.object({ appId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { data: rows } = await supabase
+      .from("api_payments")
+      .select("id,status,amount_usd,platform_fee_usd,net_usd,description,customer_email,paypal_order_id,created_at,paid_at")
+      .eq("app_id", data.appId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return { payments: rows || [] };
+  });
