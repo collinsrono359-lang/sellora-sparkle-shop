@@ -12,7 +12,7 @@ import { ArrowLeft, Copy, KeyRound, Plus, RefreshCw, Trash2, Webhook } from "luc
 import {
   listDevApps, createDevApp, rotateDevApp, updateDevApp, deleteDevApp,
   listWebhookEndpoints, createWebhookEndpoint, deleteWebhookEndpoint,
-  listRecentDeliveries, listRecentApiLogs,
+  listRecentDeliveries, listRecentApiLogs, listApiPayments,
 } from "@/lib/devapps.functions";
 
 export const Route = createFileRoute("/developer")({
@@ -159,6 +159,8 @@ function Developer() {
           <li><code>GET /api/public/v1/orders</code> — your orders</li>
           <li><code>POST /api/public/v1/orders</code> — create order (write_orders), returns approve_url</li>
           <li><code>GET /api/public/v1/users/profile</code> — your profile (read_profile)</li>
+          <li><code>POST /api/public/v1/payments</code> — charge a customer (write_payments). Body: <code>{`{ amount_usd, description?, return_url?, cancel_url?, customer_email?, metadata? }`}</code>. Returns <code>approve_url</code>. Net (after fee) credits your wallet on capture.</li>
+          <li><code>GET /api/public/v1/payments</code> — list your platform payments (write_payments)</li>
         </ul>
         <p className="mt-3 text-xs text-muted-foreground">
           Auth: <code>Authorization: Bearer sk_live_…</code>. Webhook signature header:{" "}
@@ -186,20 +188,23 @@ function AppDetailModal({ app, onClose, onSaved, onDeleted, updateFn, deleteFn }
   const [newUrl, setNewUrl] = useState("");
   const [deliveries, setDeliveries] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
 
   const listEpFn = useServerFn(listWebhookEndpoints);
   const createEpFn = useServerFn(createWebhookEndpoint);
   const deleteEpFn = useServerFn(deleteWebhookEndpoint);
   const listDelFn = useServerFn(listRecentDeliveries);
   const listLogFn = useServerFn(listRecentApiLogs);
+  const listPayFn = useServerFn(listApiPayments);
 
   async function refresh() {
-    const [eps, dels, lgs] = await Promise.all([
+    const [eps, dels, lgs, pays] = await Promise.all([
       listEpFn({ data: { appId: app.id } }),
       listDelFn({ data: { appId: app.id } }),
       listLogFn({ data: { appId: app.id } }),
+      listPayFn({ data: { appId: app.id } }),
     ]);
-    setEndpoints(eps.endpoints); setDeliveries(dels.deliveries); setLogs(lgs.logs);
+    setEndpoints(eps.endpoints); setDeliveries(dels.deliveries); setLogs(lgs.logs); setPayments(pays.payments);
   }
   useEffect(() => { refresh(); }, [app.id]);
 
@@ -315,6 +320,29 @@ function AppDetailModal({ app, onClose, onSaved, onDeleted, updateFn, deleteFn }
                   <div key={l.id} className="flex items-center justify-between gap-2 rounded border border-border px-2 py-1">
                     <span><Badge variant={l.status_code < 400 ? "default" : "destructive"}>{l.status_code}</Badge> {l.method} <code>{l.path}</code></span>
                     <span className="text-muted-foreground">{l.latency_ms ?? "-"}ms · {new Date(l.created_at).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t pt-3">
+            <h4 className="mb-2 font-semibold">Platform payments</h4>
+            <p className="mb-2 text-xs text-muted-foreground">
+              Charges your integration created via <code>POST /api/public/v1/payments</code>.
+              Paid amounts (net of {(Number(app.platform_fee_pct) * 100).toFixed(1)}% fee) land in your{" "}
+              <a className="underline" href="/wallet">wallet</a> automatically.
+            </p>
+            {payments.length === 0 ? <p className="text-xs text-muted-foreground">No payments yet.</p> : (
+              <div className="space-y-1 text-xs">
+                {payments.slice(0, 15).map((p) => (
+                  <div key={p.id} className="flex items-center justify-between gap-2 rounded border border-border px-2 py-1">
+                    <span className="min-w-0 flex-1 truncate">
+                      <Badge variant={p.status === "paid" ? "default" : p.status === "failed" ? "destructive" : "secondary"}>{p.status}</Badge>{" "}
+                      ${Number(p.amount_usd).toFixed(2)} → net ${Number(p.net_usd).toFixed(2)}
+                      {p.description ? ` · ${p.description}` : ""}
+                    </span>
+                    <span className="shrink-0 text-muted-foreground">{new Date(p.created_at).toLocaleString()}</span>
                   </div>
                 ))}
               </div>
