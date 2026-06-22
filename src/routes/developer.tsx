@@ -24,6 +24,7 @@ interface DevApp {
   id: string; name: string; description: string | null; website: string | null;
   key_prefix: string; scopes: string[]; platform_fee_pct: number; rate_limit_per_min: number;
   active: boolean; last_used_at: string | null; created_at: string;
+  mode: "live" | "test";
 }
 
 const ALL_SCOPES = ["read_products", "write_products", "read_orders", "write_orders", "read_profile", "write_payments"];
@@ -34,6 +35,7 @@ function Developer() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newMode, setNewMode] = useState<"live" | "test">("test");
   const [revealedSecret, setRevealedSecret] = useState<{ name: string; secret: string } | null>(null);
   const [selected, setSelected] = useState<DevApp | null>(null);
 
@@ -53,7 +55,7 @@ function Developer() {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      const r = await createFn({ data: { name: newName.trim() } });
+      const r = await createFn({ data: { name: newName.trim(), mode: newMode } });
       setRevealedSecret({ name: r.app.name, secret: r.secret });
       setNewName("");
       await refresh();
@@ -76,14 +78,28 @@ function Developer() {
 
       <Card className="mb-4 p-4">
         <h2 className="mb-2 flex items-center gap-2 font-semibold"><KeyRound className="h-4 w-4" /> Create new API key</h2>
-        <div className="flex gap-2">
+        <div className="space-y-2">
           <Input placeholder="App name (e.g. My Integration)" value={newName} onChange={(e) => setNewName(e.target.value)} />
-          <Button onClick={onCreate} disabled={creating || !newName.trim()}>
-            <Plus className="mr-1 h-4 w-4" />Create
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-md border border-border p-0.5 text-xs">
+              <button type="button" onClick={() => setNewMode("test")}
+                className={`rounded px-3 py-1 ${newMode === "test" ? "bg-primary text-primary-foreground" : ""}`}>
+                Sandbox (test)
+              </button>
+              <button type="button" onClick={() => setNewMode("live")}
+                className={`rounded px-3 py-1 ${newMode === "live" ? "bg-primary text-primary-foreground" : ""}`}>
+                Live
+              </button>
+            </div>
+            <Button onClick={onCreate} disabled={creating || !newName.trim()} className="ml-auto">
+              <Plus className="mr-1 h-4 w-4" />Create {newMode === "test" ? "sandbox" : "live"} key
+            </Button>
+          </div>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Default scopes: read_products, read_orders, read_profile. Default platform fee: 10%.
+          <b>Sandbox keys</b> (<code>sk_test_…</code>) charge nothing — payments auto-complete via a simulated approve URL and
+          do <b>not</b> credit your wallet. Use them while building. Switch to a <b>live key</b> (<code>sk_live_…</code>) to
+          accept real payments. Default scopes: read_products, read_orders, read_profile. Default platform fee: 10%.
         </p>
       </Card>
 
@@ -111,6 +127,9 @@ function Developer() {
                   <div className="flex items-center gap-2">
                     <span className="font-semibold">{a.name}</span>
                     <Badge variant={a.active ? "default" : "secondary"}>{a.active ? "Active" : "Disabled"}</Badge>
+                    <Badge variant={a.mode === "test" ? "secondary" : "default"}>
+                      {a.mode === "test" ? "Sandbox" : "Live"}
+                    </Badge>
                   </div>
                   <code className="mt-1 block text-xs text-muted-foreground">{a.key_prefix}…</code>
                   <p className="mt-1 text-xs text-muted-foreground">
