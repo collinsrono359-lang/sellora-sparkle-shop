@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_payments: {
+        Row: {
+          amount_usd: number
+          app_id: string
+          cancel_url: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_reference: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          net_usd: number
+          owner_id: string
+          paid_at: string | null
+          paypal_capture_id: string | null
+          paypal_order_id: string | null
+          platform_fee_pct: number
+          platform_fee_usd: number
+          raw_paypal: Json | null
+          return_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_usd: number
+          app_id: string
+          cancel_url?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_reference?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          net_usd: number
+          owner_id: string
+          paid_at?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
+          platform_fee_pct: number
+          platform_fee_usd: number
+          raw_paypal?: Json | null
+          return_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          app_id?: string
+          cancel_url?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_reference?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          net_usd?: number
+          owner_id?: string
+          paid_at?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
+          platform_fee_pct?: number
+          platform_fee_usd?: number
+          raw_paypal?: Json | null
+          return_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_payments_app_id_fkey"
+            columns: ["app_id"]
+            isOneToOne: false
+            referencedRelation: "developer_apps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_request_logs: {
         Row: {
           app_id: string | null
