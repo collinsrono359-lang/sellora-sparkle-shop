@@ -24,6 +24,7 @@ interface DevApp {
   id: string; name: string; description: string | null; website: string | null;
   key_prefix: string; scopes: string[]; platform_fee_pct: number; rate_limit_per_min: number;
   active: boolean; last_used_at: string | null; created_at: string;
+  mode: "live" | "test";
 }
 
 const ALL_SCOPES = ["read_products", "write_products", "read_orders", "write_orders", "read_profile", "write_payments"];
@@ -34,6 +35,7 @@ function Developer() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newMode, setNewMode] = useState<"live" | "test">("test");
   const [revealedSecret, setRevealedSecret] = useState<{ name: string; secret: string } | null>(null);
   const [selected, setSelected] = useState<DevApp | null>(null);
 
@@ -53,7 +55,7 @@ function Developer() {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      const r = await createFn({ data: { name: newName.trim() } });
+      const r = await createFn({ data: { name: newName.trim(), mode: newMode } });
       setRevealedSecret({ name: r.app.name, secret: r.secret });
       setNewName("");
       await refresh();
@@ -76,14 +78,28 @@ function Developer() {
 
       <Card className="mb-4 p-4">
         <h2 className="mb-2 flex items-center gap-2 font-semibold"><KeyRound className="h-4 w-4" /> Create new API key</h2>
-        <div className="flex gap-2">
+        <div className="space-y-2">
           <Input placeholder="App name (e.g. My Integration)" value={newName} onChange={(e) => setNewName(e.target.value)} />
-          <Button onClick={onCreate} disabled={creating || !newName.trim()}>
-            <Plus className="mr-1 h-4 w-4" />Create
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-md border border-border p-0.5 text-xs">
+              <button type="button" onClick={() => setNewMode("test")}
+                className={`rounded px-3 py-1 ${newMode === "test" ? "bg-primary text-primary-foreground" : ""}`}>
+                Sandbox (test)
+              </button>
+              <button type="button" onClick={() => setNewMode("live")}
+                className={`rounded px-3 py-1 ${newMode === "live" ? "bg-primary text-primary-foreground" : ""}`}>
+                Live
+              </button>
+            </div>
+            <Button onClick={onCreate} disabled={creating || !newName.trim()} className="ml-auto">
+              <Plus className="mr-1 h-4 w-4" />Create {newMode === "test" ? "sandbox" : "live"} key
+            </Button>
+          </div>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Default scopes: read_products, read_orders, read_profile. Default platform fee: 10%.
+          <b>Sandbox keys</b> (<code>sk_test_…</code>) charge nothing — payments auto-complete via a simulated approve URL and
+          do <b>not</b> credit your wallet. Use them while building. Switch to a <b>live key</b> (<code>sk_live_…</code>) to
+          accept real payments. Default scopes: read_products, read_orders, read_profile. Default platform fee: 10%.
         </p>
       </Card>
 
@@ -111,6 +127,9 @@ function Developer() {
                   <div className="flex items-center gap-2">
                     <span className="font-semibold">{a.name}</span>
                     <Badge variant={a.active ? "default" : "secondary"}>{a.active ? "Active" : "Disabled"}</Badge>
+                    <Badge variant={a.mode === "test" ? "secondary" : "default"}>
+                      {a.mode === "test" ? "Sandbox" : "Live"}
+                    </Badge>
                   </div>
                   <code className="mt-1 block text-xs text-muted-foreground">{a.key_prefix}…</code>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -148,26 +167,139 @@ function Developer() {
         />
       )}
 
-      <Card className="mt-6 p-4">
-        <h3 className="mb-2 font-semibold">Quick reference</h3>
+      <IntegrationGuide />
+    </AppLayout>
+  );
+}
+
+function IntegrationGuide() {
+  const base = typeof window !== "undefined" ? window.location.origin : "https://sellora-sparkle-shop.lovable.app";
+  const copy = (t: string) => navigator.clipboard.writeText(t).then(() => toast.success("Copied"));
+  const Block = ({ code }: { code: string }) => (
+    <div className="relative">
+      <pre className="overflow-x-auto rounded bg-muted p-3 text-[11px] leading-relaxed"><code>{code}</code></pre>
+      <Button size="sm" variant="ghost" className="absolute right-1 top-1 h-6" onClick={() => copy(code)}>
+        <Copy className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+  return (
+    <Card className="mt-6 space-y-4 p-4 text-sm">
+      <div>
+        <h3 className="font-semibold">Integrate Sellora into your app</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          The Sellora REST API lets your website, mobile app, or backend list products,
+          place orders, and accept payments through Sellora's payment rails. All requests
+          go to <code>{base}/api/public/v1/*</code>.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">1 · Get a sandbox key</h4>
+        <p className="text-xs text-muted-foreground">
+          Create an app above with mode = <b>Sandbox</b>. You'll see your secret once
+          (<code>sk_test_…</code>). Save it in your server's environment as <code>SELLORA_API_KEY</code>.
+          Never expose it in browser code.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">2 · Authenticate</h4>
+        <Block code={`curl ${base}/api/public/v1/products \\
+  -H "Authorization: Bearer sk_test_xxxxxxxxxxxx"`} />
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">3 · List or fetch products</h4>
+        <Block code={`GET  /api/public/v1/products?limit=20&offset=0
+GET  /api/public/v1/products/{id}
+GET  /api/public/v1/sellers/{id}
+GET  /api/public/v1/sellers/{id}/products`} />
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">4 · Accept payments (Sellora handles checkout)</h4>
+        <p className="mb-2 text-xs text-muted-foreground">
+          Create a payment on your server, then redirect the customer to <code>approve_url</code>.
+          After they pay, they're redirected to your <code>return_url</code>. Net amount
+          (after your app's platform fee) lands in your Sellora wallet automatically.
+        </p>
+        <Block code={`curl -X POST ${base}/api/public/v1/payments \\
+  -H "Authorization: Bearer sk_test_xxxxxxxxxxxx" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "amount_usd": 29.99,
+    "description": "Pro plan - monthly",
+    "customer_email": "buyer@example.com",
+    "return_url": "https://yourapp.com/billing/success",
+    "cancel_url": "https://yourapp.com/billing/cancel",
+    "metadata": { "user_id": "u_123" }
+  }'`} />
+        <p className="mt-2 text-xs text-muted-foreground">
+          Response includes <code>id</code> and <code>approve_url</code>. In sandbox the
+          approve URL auto-completes the payment; append <code>&simulate=failed</code> to test failures.
+        </p>
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">5 · Listen for webhooks</h4>
+        <p className="mb-2 text-xs text-muted-foreground">
+          In an app's <b>Manage</b> panel, add a webhook endpoint URL. Sellora signs every
+          request so you can verify it came from us. Events: <code>order.created</code>,
+          <code> order.paid</code>, <code>order.released</code>, <code>order.failed</code>,
+          <code> product.created</code>.
+        </p>
+        <Block code={`// Node / Express verification
+import crypto from "crypto";
+app.post("/webhooks/sellora", express.raw({ type: "*/*" }), (req, res) => {
+  const header = req.headers["x-sellora-signature"]; // "t=<ts>,v1=<hmac>"
+  const [t, v1] = header.split(",").map(p => p.split("=")[1]);
+  const expected = crypto.createHmac("sha256", process.env.SELLORA_WEBHOOK_SECRET)
+    .update(\`\${t}.\${req.body.toString()}\`).digest("hex");
+  if (expected !== v1) return res.status(401).end();
+  const event = JSON.parse(req.body.toString());
+  // handle event.type, event.data ...
+  res.json({ ok: true });
+});`} />
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">6 · Embed a Buy button</h4>
+        <p className="mb-2 text-xs text-muted-foreground">
+          Easiest way to charge customers from a static site — your server creates the
+          payment, returns the <code>approve_url</code>, the button opens it.
+        </p>
+        <Block code={`<button id="buy">Buy for $29.99</button>
+<script>
+  document.getElementById("buy").onclick = async () => {
+    const r = await fetch("/api/checkout", { method: "POST" }).then(r => r.json());
+    window.location = r.approve_url;
+  };
+</script>`} />
+      </div>
+
+      <div>
+        <h4 className="mb-1 font-semibold">Endpoint reference</h4>
         <ul className="space-y-1 text-xs text-muted-foreground">
-          <li><code>GET /api/public/v1/products</code> — list products</li>
-          <li><code>GET /api/public/v1/products/:id</code> — get one</li>
-          <li><code>POST /api/public/v1/products</code> — create (write_products)</li>
-          <li><code>GET /api/public/v1/sellers/:id</code> — seller profile</li>
-          <li><code>GET /api/public/v1/sellers/:id/products</code> — seller's products</li>
-          <li><code>GET /api/public/v1/orders</code> — your orders</li>
-          <li><code>POST /api/public/v1/orders</code> — create order (write_orders), returns approve_url</li>
-          <li><code>GET /api/public/v1/users/profile</code> — your profile (read_profile)</li>
-          <li><code>POST /api/public/v1/payments</code> — charge a customer (write_payments). Body: <code>{`{ amount_usd, description?, return_url?, cancel_url?, customer_email?, metadata? }`}</code>. Returns <code>approve_url</code>. Net (after fee) credits your wallet on capture.</li>
-          <li><code>GET /api/public/v1/payments</code> — list your platform payments (write_payments)</li>
+          <li><code>GET    /api/public/v1/products</code> — list (read_products)</li>
+          <li><code>GET    /api/public/v1/products/:id</code> — fetch one</li>
+          <li><code>POST   /api/public/v1/products</code> — create (write_products)</li>
+          <li><code>PUT    /api/public/v1/products/:id</code> — update (write_products)</li>
+          <li><code>GET    /api/public/v1/sellers/:id</code> — seller profile</li>
+          <li><code>GET    /api/public/v1/sellers/:id/products</code> — seller's products</li>
+          <li><code>GET    /api/public/v1/orders</code> — your orders (read_orders)</li>
+          <li><code>POST   /api/public/v1/orders</code> — checkout an existing product (write_orders)</li>
+          <li><code>GET    /api/public/v1/users/profile</code> — your profile (read_profile)</li>
+          <li><code>POST   /api/public/v1/payments</code> — charge any amount (write_payments)</li>
+          <li><code>GET    /api/public/v1/payments</code> — list charges (write_payments)</li>
         </ul>
         <p className="mt-3 text-xs text-muted-foreground">
-          Auth: <code>Authorization: Bearer sk_live_…</code>. Webhook signature header:{" "}
-          <code>X-Sellora-Signature: t=&lt;ts&gt;,v1=&lt;hmac_sha256(secret, ts + "." + body)&gt;</code>
+          Errors return <code>{`{ error: { code, message } }`}</code> with HTTP 4xx/5xx.
+          Rate limit: 60 req/min per key (configurable). Need a higher limit or extra
+          scopes? Edit the app in <b>Manage</b>.
         </p>
-      </Card>
-    </AppLayout>
+      </div>
+    </Card>
   );
 }
 

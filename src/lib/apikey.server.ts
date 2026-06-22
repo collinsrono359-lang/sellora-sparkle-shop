@@ -1,10 +1,13 @@
 import crypto from "crypto";
 
-// API key format: sk_live_<24-char base64url>  →  prefix is first 16 chars (sk_live_xxxxxxxx)
-export function generateApiKey() {
+// API key format:
+//   live: sk_live_<24-char base64url>
+//   test: sk_test_<24-char base64url>  (sandbox; no real money moves)
+// Prefix stored = first 16 chars (sk_live_xxxxxxxx / sk_test_xxxxxxxx)
+export function generateApiKey(mode: "live" | "test" = "live") {
   const rand = crypto.randomBytes(24).toString("base64url");
-  const full = `sk_live_${rand}`;
-  const prefix = full.slice(0, 16); // sk_live_ + 8 chars
+  const full = `sk_${mode}_${rand}`;
+  const prefix = full.slice(0, 16);
   const hash = crypto.createHash("sha256").update(full).digest("hex");
   return { full, prefix, hash };
 }

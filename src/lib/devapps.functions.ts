@@ -8,26 +8,28 @@ export const listDevApps = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data } = await supabase
       .from("developer_apps")
-      .select("id,name,description,website,key_prefix,scopes,platform_fee_pct,rate_limit_per_min,active,last_used_at,created_at")
+      .select("id,name,description,website,key_prefix,scopes,platform_fee_pct,rate_limit_per_min,active,last_used_at,created_at,mode")
       .order("created_at", { ascending: false });
     return { apps: data || [] };
   });
 
 export const createDevApp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { name: string; description?: string; website?: string; scopes?: string[]; platform_fee_pct?: number }) =>
+  .inputValidator((d: { name: string; description?: string; website?: string; scopes?: string[]; platform_fee_pct?: number; mode?: "live" | "test" }) =>
     z.object({
       name: z.string().min(1).max(80),
       description: z.string().max(500).optional(),
       website: z.string().url().max(200).optional().or(z.literal("")),
       scopes: z.array(z.string()).max(20).optional(),
       platform_fee_pct: z.number().min(0).max(0.5).optional(),
+      mode: z.enum(["live", "test"]).optional(),
     }).parse(d))
   .handler(async ({ data, context }) => {
     const { userId } = context;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { generateApiKey } = await import("@/lib/apikey.server");
-    const key = generateApiKey();
+    const mode = data.mode || "live";
+    const key = generateApiKey(mode);
     const { data: app, error } = await supabaseAdmin
       .from("developer_apps")
       .insert({
@@ -39,8 +41,9 @@ export const createDevApp = createServerFn({ method: "POST" })
         platform_fee_pct: data.platform_fee_pct ?? 0.10,
         key_prefix: key.prefix,
         key_hash: key.hash,
+        mode,
       })
-      .select("id,name,key_prefix")
+      .select("id,name,key_prefix,mode")
       .single();
     if (error || !app) throw new Error(error?.message || "Create failed");
     // Return the secret ONCE — never stored or shown again.
@@ -56,7 +59,8 @@ export const rotateDevApp = createServerFn({ method: "POST" })
     const { generateApiKey } = await import("@/lib/apikey.server");
     const { data: existing } = await supabaseAdmin.from("developer_apps").select("owner_id").eq("id", data.id).maybeSingle();
     if (!existing || existing.owner_id !== userId) throw new Error("Not found");
-    const key = generateApiKey();
+    const { data: existingMode } = await supabaseAdmin.from("developer_apps").select("mode").eq("id", data.id).maybeSingle();
+    const key = generateApiKey(((existingMode?.mode as "live"|"test") || "live"));
     const { error } = await supabaseAdmin
       .from("developer_apps")
       .update({ key_prefix: key.prefix, key_hash: key.hash })

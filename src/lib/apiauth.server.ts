@@ -9,6 +9,7 @@ export interface AuthedApp {
   platform_fee_pct: number;
   rate_limit_per_min: number;
   active: boolean;
+  mode: "live" | "test";
 }
 
 export async function authenticateApiRequest(request: Request): Promise<
@@ -20,13 +21,13 @@ export async function authenticateApiRequest(request: Request): Promise<
     return { error: jsonErr(401, "missing_authorization", "Provide Authorization: Bearer sk_...") };
   }
   const token = auth.slice(7).trim();
-  if (!token.startsWith("sk_live_")) {
-    return { error: jsonErr(401, "invalid_key_format", "API key must start with sk_live_") };
+  if (!token.startsWith("sk_live_") && !token.startsWith("sk_test_")) {
+    return { error: jsonErr(401, "invalid_key_format", "API key must start with sk_live_ or sk_test_") };
   }
   const keyHash = hashApiKey(token);
   const { data, error } = await supabaseAdmin
     .from("developer_apps")
-    .select("id,owner_id,name,scopes,platform_fee_pct,rate_limit_per_min,active")
+    .select("id,owner_id,name,scopes,platform_fee_pct,rate_limit_per_min,active,mode")
     .eq("key_hash", keyHash)
     .maybeSingle();
   if (error || !data) return { error: jsonErr(401, "invalid_key", "Unknown API key") };

@@ -52,11 +52,28 @@ export const Route = createFileRoute("/api/public/v1/payments")({
               metadata: body.metadata || null,
               return_url: body.return_url || null,
               cancel_url: body.cancel_url || null,
+              mode: app.mode || "live",
             })
             .select("*").single();
           if (pErr || !payment) return jsonErr(500, "db_error", pErr?.message || "Create failed");
 
           const base = `https://${request.headers.get("host") || "sellora-sparkle-shop.lovable.app"}`;
+          // Sandbox: skip PayPal entirely, simulate an approve_url that auto-captures
+          if ((app.mode || "live") === "test") {
+            const approve = `${base}/api/public/v1/payments/capture?id=${payment.id}&simulate=paid`;
+            return jsonOk({
+              data: {
+                id: payment.id,
+                mode: "test",
+                status: "pending",
+                amount_usd: usd,
+                platform_fee_usd: fee,
+                net_usd: net,
+                approve_url: approve,
+                note: "Sandbox payment — no real money. Open approve_url (or append &simulate=failed) to test.",
+              },
+            }, 201);
+          }
           const pp = await createPaypalOrder({
             amountUsd: usd,
             orderId: payment.id,

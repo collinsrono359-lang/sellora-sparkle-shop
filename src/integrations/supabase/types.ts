@@ -26,6 +26,7 @@ export type Database = {
           description: string | null
           id: string
           metadata: Json | null
+          mode: string
           net_usd: number
           owner_id: string
           paid_at: string | null
@@ -49,6 +50,7 @@ export type Database = {
           description?: string | null
           id?: string
           metadata?: Json | null
+          mode?: string
           net_usd: number
           owner_id: string
           paid_at?: string | null
@@ -72,6 +74,7 @@ export type Database = {
           description?: string | null
           id?: string
           metadata?: Json | null
+          mode?: string
           net_usd?: number
           owner_id?: string
           paid_at?: string | null
@@ -231,6 +234,7 @@ export type Database = {
           key_hash: string
           key_prefix: string
           last_used_at: string | null
+          mode: string
           name: string
           owner_id: string
           platform_fee_pct: number
@@ -247,6 +251,7 @@ export type Database = {
           key_hash: string
           key_prefix: string
           last_used_at?: string | null
+          mode?: string
           name: string
           owner_id: string
           platform_fee_pct?: number
@@ -263,6 +268,7 @@ export type Database = {
           key_hash?: string
           key_prefix?: string
           last_used_at?: string | null
+          mode?: string
           name?: string
           owner_id?: string
           platform_fee_pct?: number
