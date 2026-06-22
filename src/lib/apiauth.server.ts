@@ -9,6 +9,7 @@ export interface AuthedApp {
   platform_fee_pct: number;
   rate_limit_per_min: number;
   active: boolean;
+  mode: "live" | "test";
 }
 
 export async function authenticateApiRequest(request: Request): Promise<
