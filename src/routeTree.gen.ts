@@ -40,6 +40,7 @@ import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as InboxUserIdRouteImport } from './routes/inbox_.$userId'
 import { Route as CheckoutProductIdRouteImport } from './routes/checkout.$productId'
 import { Route as ApiReviewAppealRouteImport } from './routes/api/review-appeal'
+import { Route as ApiModerateProductRouteImport } from './routes/api/moderate-product'
 import { Route as ApiModerateRouteImport } from './routes/api/moderate'
 import { Route as ProductIdEditRouteImport } from './routes/product.$id_.edit'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
@@ -215,6 +216,11 @@ const ApiReviewAppealRoute = ApiReviewAppealRouteImport.update({
   path: '/api/review-appeal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiModerateProductRoute = ApiModerateProductRouteImport.update({
+  id: '/api/moderate-product',
+  path: '/api/moderate-product',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiModerateRoute = ApiModerateRouteImport.update({
   id: '/api/moderate',
   path: '/api/moderate',
@@ -340,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/moderate-product': typeof ApiModerateProductRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
@@ -392,6 +399,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/moderate-product': typeof ApiModerateProductRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox/$userId': typeof InboxUserIdRoute
@@ -445,6 +453,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/wallet': typeof WalletRoute
   '/api/moderate': typeof ApiModerateRoute
+  '/api/moderate-product': typeof ApiModerateProductRoute
   '/api/review-appeal': typeof ApiReviewAppealRoute
   '/checkout/$productId': typeof CheckoutProductIdRoute
   '/inbox_/$userId': typeof InboxUserIdRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/wallet'
     | '/api/moderate'
+    | '/api/moderate-product'
     | '/api/review-appeal'
     | '/checkout/$productId'
     | '/inbox/$userId'
@@ -551,6 +561,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/wallet'
     | '/api/moderate'
+    | '/api/moderate-product'
     | '/api/review-appeal'
     | '/checkout/$productId'
     | '/inbox/$userId'
@@ -603,6 +614,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/wallet'
     | '/api/moderate'
+    | '/api/moderate-product'
     | '/api/review-appeal'
     | '/checkout/$productId'
     | '/inbox_/$userId'
@@ -656,6 +668,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   WalletRoute: typeof WalletRoute
   ApiModerateRoute: typeof ApiModerateRoute
+  ApiModerateProductRoute: typeof ApiModerateProductRoute
   ApiReviewAppealRoute: typeof ApiReviewAppealRoute
   CheckoutProductIdRoute: typeof CheckoutProductIdRoute
   InboxUserIdRoute: typeof InboxUserIdRoute
@@ -898,6 +911,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReviewAppealRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/moderate-product': {
+      id: '/api/moderate-product'
+      path: '/api/moderate-product'
+      fullPath: '/api/moderate-product'
+      preLoaderRoute: typeof ApiModerateProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/moderate': {
       id: '/api/moderate'
       path: '/api/moderate'
@@ -1114,6 +1134,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   WalletRoute: WalletRoute,
   ApiModerateRoute: ApiModerateRoute,
+  ApiModerateProductRoute: ApiModerateProductRoute,
   ApiReviewAppealRoute: ApiReviewAppealRoute,
   CheckoutProductIdRoute: CheckoutProductIdRoute,
   InboxUserIdRoute: InboxUserIdRoute,
