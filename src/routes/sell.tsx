@@ -189,7 +189,7 @@ function Sell() {
         photoUrls.push(supabase.storage.from("products").getPublicUrl(path).data.publicUrl);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from("products") as any).insert({
+      const { data: inserted, error } = await (supabase.from("products") as any).insert({
         seller_id: user.id,
         title: parsed.data.title,
         price: parsed.data.price,
@@ -201,8 +201,27 @@ function Sell() {
         shipping_available: shipping,
         photos: photoUrls,
         status: isExpensive ? "pending_review" : "active",
-      });
+      }).select("id").single();
       if (error) throw error;
+      // Fire-and-forget AI moderation; suspends seller 120 days if it violates terms.
+      try {
+        const { data: sess } = await supabase.auth.getSession();
+        const tok = sess.session?.access_token;
+        if (tok && inserted?.id) {
+          const r = await fetch("/api/moderate-product", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${tok}` },
+            body: JSON.stringify({ productId: inserted.id }),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (j?.suspended) {
+            toast.error("Listing removed and account suspended for 120 days for terms violation.");
+            await supabase.auth.signOut();
+            navigate({ to: "/auth" });
+            return;
+          }
+        }
+      } catch { /* ignore */ }
       // Record timestamp for rate-limiting
       const RATE_KEY = "sellora_post_timestamps";
       const nowTs = Date.now();
