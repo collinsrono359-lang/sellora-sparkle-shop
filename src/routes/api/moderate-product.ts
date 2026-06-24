@@ -94,8 +94,8 @@ export const Route = createFileRoute("/api/moderate-product")({
             return Response.json({ ok: true, verdict: verdict ?? { verdict: "ok" } });
           }
 
-          // VIOLATION → remove product, suspend seller 120 days, notify
-          const until = new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString();
+          // VIOLATION → remove product, PERMANENTLY ban seller, notify
+          const until = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString();
           await supabaseAdmin
             .from("products")
             .update({ status: "removed" } as never)
@@ -118,7 +118,8 @@ export const Route = createFileRoute("/api/moderate-product")({
           await (supabaseAdmin.from("profiles") as never as { update: (v: unknown) => { eq: (a: string, b: string) => Promise<unknown> } })
             .update({
               suspended_until: until,
-              ban_reason: `Prohibited listing: ${verdict.reason}`,
+              permanent_ban: true,
+              ban_reason: `Permanent ban — prohibited listing: ${verdict.reason}`,
               warning_count: ((prof as { warning_count?: number } | null)?.warning_count ?? 0) + 1,
             })
             .eq("user_id", userId);
@@ -126,8 +127,8 @@ export const Route = createFileRoute("/api/moderate-product")({
           await supabaseAdmin.from("notifications" as never).insert({
             user_id: userId,
             category: "system",
-            title: "Account suspended for 120 days",
-            body: `Your listing "${product.title}" violates our terms (${verdict.category}). ${verdict.reason} You may file an appeal.`,
+            title: "Account permanently suspended",
+            body: `Your listing "${product.title}" violates our terms (${verdict.category}). ${verdict.reason} This is a permanent ban — you may request a data export, delete your account, or file an appeal.`,
             link: "/settings",
             read: false,
           } as never);
