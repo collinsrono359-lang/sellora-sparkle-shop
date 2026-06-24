@@ -3,8 +3,10 @@ import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ShieldAlert, CheckCircle2, XCircle, Clock, Upload } from "lucide-react";
+import { ShieldAlert, CheckCircle2, XCircle, Clock, Upload, Download, Trash2, Ban } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { exportMyData, deleteMyAccount } from "@/lib/account.functions";
 
 interface Appeal {
   id: string;
@@ -48,8 +50,44 @@ export function SuspensionAppealModal() {
   const [submitting, setSubmitting] = useState(false);
   const [decisionShown, setDecisionShown] = useState<Appeal | null>(null);
   const [, tick] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [busy, setBusy] = useState<"export" | "delete" | null>(null);
+  const exportFn = useServerFn(exportMyData);
+  const deleteFn = useServerFn(deleteMyAccount);
 
   const isCritical = permanentBan || warningCount >= 2;
+
+  const handleExport = async () => {
+    setBusy("export");
+    try {
+      const data = await exportFn({ data: undefined });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sellora-data-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Your data has been downloaded.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally { setBusy(null); }
+  };
+
+  const handleDelete = async () => {
+    if (deleteText !== "DELETE") { toast.error('Type DELETE to confirm.'); return; }
+    setBusy("delete");
+    try {
+      await deleteFn({ data: { confirm: "DELETE" } });
+      toast.success("Account deleted.");
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+      setBusy(null);
+    }
+  };
 
   // tick for countdown
   useEffect(() => {
@@ -272,23 +310,26 @@ export function SuspensionAppealModal() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <ShieldAlert className="h-5 w-5" />
-            Account suspended
+            {permanentBan ? <Ban className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
+            {permanentBan ? "Account permanently suspended" : "Account suspended"}
           </DialogTitle>
           <DialogDescription>
-            Your account is temporarily restricted by Sellora's safety system. You can still browse, but messaging and
-            posting are paused.
+            {permanentBan
+              ? "Your account is permanently banned for repeated or severe terms violations. You can download your data or delete your account at any time."
+              : "Your account is temporarily restricted by Sellora's safety system. You can still browse, but messaging and posting are paused."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 text-sm">
-          <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <div>
-              <p className="font-semibold">Lifts at {new Date(suspendedUntil).toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">{remaining}</p>
+          {!permanentBan && (
+            <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <div>
+                <p className="font-semibold">Lifts at {new Date(suspendedUntil).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">{remaining}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           {latestFlag && (
             <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3">
@@ -296,6 +337,47 @@ export function SuspensionAppealModal() {
                 Reason · {latestFlag.category.replace("_", " ")}
               </p>
               <p className="text-sm">{latestFlag.reason}</p>
+            </div>
+          )}
+
+          {/* Data rights: download / delete — always available when suspended */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleExport}
+              disabled={busy !== null}
+              className="flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold hover:bg-muted disabled:opacity-50"
+            >
+              <Download className="h-4 w-4" /> {busy === "export" ? "Preparing…" : "Download my data"}
+            </button>
+            <button
+              onClick={() => setConfirmDelete(true)}
+              disabled={busy !== null}
+              className="flex items-center justify-center gap-2 rounded-md border border-destructive/40 px-3 py-2 text-xs font-semibold text-destructive hover:bg-destructive/10 disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" /> Delete account
+            </button>
+          </div>
+
+          {confirmDelete && (
+            <div className="space-y-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs">
+              <p className="font-semibold text-destructive">This cannot be undone.</p>
+              <p className="text-muted-foreground">Type <span className="font-mono font-bold">DELETE</span> to permanently remove your account, listings, messages, and wallet history.</p>
+              <input
+                value={deleteText}
+                onChange={(e) => setDeleteText(e.target.value)}
+                placeholder="DELETE"
+                className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+              <div className="flex justify-end gap-2">
+                <button onClick={() => { setConfirmDelete(false); setDeleteText(""); }} className="h-8 rounded-md border border-border px-3 text-xs">Cancel</button>
+                <button
+                  onClick={handleDelete}
+                  disabled={busy !== null || deleteText !== "DELETE"}
+                  className="h-8 rounded-md bg-destructive px-3 text-xs font-semibold text-destructive-foreground disabled:opacity-50"
+                >
+                  {busy === "delete" ? "Deleting…" : "Delete permanently"}
+                </button>
+              </div>
             </div>
           )}
 

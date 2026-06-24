@@ -4,6 +4,7 @@ import { BottomNav } from "./BottomNav";
 import { OfflineBanner } from "./OfflineBanner";
 import { ModerationBanner } from "./ModerationBanner";
 import { SuspensionAppealModal } from "./SuspensionAppealModal";
+import { GuestActivityGuard } from "./GuestActivityGuard";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <ModerationBanner />
       <main className="mx-auto w-full max-w-screen-md flex-1 px-4 py-4">{children}</main>
       <SuspensionAppealModal />
+      <GuestActivityGuard />
       <BottomNav />
     </div>
   );
