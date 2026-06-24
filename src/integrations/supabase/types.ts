@@ -144,6 +144,39 @@ export type Database = {
           },
         ]
       }
+      blocked_ips: {
+        Row: {
+          blocked_until: string | null
+          category: string
+          created_at: string
+          id: string
+          ip: string
+          permanent: boolean
+          reason: string
+          user_id: string | null
+        }
+        Insert: {
+          blocked_until?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          ip: string
+          permanent?: boolean
+          reason: string
+          user_id?: string | null
+        }
+        Update: {
+          blocked_until?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          ip?: string
+          permanent?: boolean
+          reason?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_clears: {
         Row: {
           cleared_at: string
@@ -1466,6 +1499,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_ip_blocked: { Args: { _ip: string }; Returns: boolean }
       record_product_view: {
         Args: { _product_id: string; _viewer_ip: string }
         Returns: boolean
