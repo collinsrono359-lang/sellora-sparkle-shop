@@ -3,8 +3,10 @@ import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ShieldAlert, CheckCircle2, XCircle, Clock, Upload } from "lucide-react";
+import { ShieldAlert, CheckCircle2, XCircle, Clock, Upload, Download, Trash2, Ban } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { exportMyData, deleteMyAccount } from "@/lib/account.functions";
 
 interface Appeal {
   id: string;
@@ -48,8 +50,44 @@ export function SuspensionAppealModal() {
   const [submitting, setSubmitting] = useState(false);
   const [decisionShown, setDecisionShown] = useState<Appeal | null>(null);
   const [, tick] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [busy, setBusy] = useState<"export" | "delete" | null>(null);
+  const exportFn = useServerFn(exportMyData);
+  const deleteFn = useServerFn(deleteMyAccount);
 
   const isCritical = permanentBan || warningCount >= 2;
+
+  const handleExport = async () => {
+    setBusy("export");
+    try {
+      const data = await exportFn({ data: undefined });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sellora-data-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Your data has been downloaded.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally { setBusy(null); }
+  };
+
+  const handleDelete = async () => {
+    if (deleteText !== "DELETE") { toast.error('Type DELETE to confirm.'); return; }
+    setBusy("delete");
+    try {
+      await deleteFn({ data: { confirm: "DELETE" } });
+      toast.success("Account deleted.");
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+      setBusy(null);
+    }
+  };
 
   // tick for countdown
   useEffect(() => {
