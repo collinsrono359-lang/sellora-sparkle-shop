@@ -75,6 +75,8 @@ function ProductPage() {
   useEffect(() => {
     if (!p) return;
     const sessionKey = `viewed:${id}`;
+    // Fire a lightweight scrape-detector event on every product view, regardless of dedupe.
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("sellora:product-view"));
     if (sessionStorage.getItem(sessionKey)) return;
     const timer = setTimeout(async () => {
       // Best-effort IP fetch for guests (so the unique constraint can dedupe).
